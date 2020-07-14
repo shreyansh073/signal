@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require('express')
 const jwt = require('express-jwt')
 const models = require('./models');
@@ -7,12 +9,12 @@ const path = require('path');
 
 
 const api = express()
-const port = process.env.PORT || 3000
+const port = process.env.PORT
 
 api.use(express.json())
 
 api.use(
-	jwt({ secret: 'bits', algorithms: ['HS256'] }).unless({
+	jwt({ secret: process.env.JWT_SECRET , algorithms: ['HS256'] }).unless({
 		path: [
 			'/',
 			'/auth/signup',
