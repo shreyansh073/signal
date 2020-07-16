@@ -19,8 +19,10 @@ api.use(
 			'/',
 			'/auth/signup',
 			'/auth/login',
-			'/auth/forgot',
-			'/auth/reset',
+			'/auth/forgot-password',
+			'/auth/reset-password',
+			'/auth/verify-otp',
+			'/auth/verify-email'
 		],
 	}),
 );
@@ -29,6 +31,7 @@ api.use(function catchAuthErrors(err, req, res, next) {
 	if (err.name === 'UnauthorizedError') {
 		res.status(401).send('Missing authentication credentials.');
 	}
+	next()
 });
 
 fs.readdirSync(path.join(__dirname, 'routes')).map((file) => {

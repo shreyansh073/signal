@@ -1,8 +1,11 @@
 'use strict';
 const bcrypt = require('bcrypt')
+const {SendEmailVerificationEmail} = require('../util/email/send');
+const jwt = require('jsonwebtoken')
 const {
   Model
 } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -14,9 +17,18 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   };
+
   User.init({
     name: {
       type: DataTypes.STRING,
+    },
+    username: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false,
+      validate: {
+        isAlphanumeric: true
+      }
     },
     email: {
       type: DataTypes.STRING,
@@ -29,6 +41,16 @@ module.exports = (sequelize, DataTypes) => {
     password: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    OTP: {
+      type: DataTypes.INTEGER,
+    },
+    OTPCreatedAt: {
+      type: DataTypes.DATE
     }
   }, {
     sequelize,
@@ -36,13 +58,46 @@ module.exports = (sequelize, DataTypes) => {
     hooks: {
       beforeCreate: async (user) => {
         user.password = await bcrypt.hash(user.password, 8)
-      }
-    },
-    instanceMethods: {
-      validPassword: function(password) {
-        return bcrypt.compareSync(password, this.password);
-      }
-    }  
+      },
+    }
   });
+
+  User.prototype.validPassword =  async function(password) {
+    return bcrypt.compare(password, this.password);
+  }
+
+  User.prototype.setOTP = async function(){
+    const user = this;
+    if((Date.now().valueOf() - user.OTPCreatedAt.valueOf())/1000 > 60){
+      const min = parseInt(process.env.MINOTP)
+      const max = parseInt(process.env.MAXOTP)
+      user.OTP = Math.round(Math.random() * (max - min) + min);
+      user.isVerified = false;
+      await user.save();
+    }
+  }
+
+  User.prototype.isValidOTP = async function(otp){
+    const user = this;
+    if((Date.now().valueOf() - user.OTPCreatedAt.valueOf())/1000 < 60 && user.OTP === parseInt(otp)){
+      user.isVerified = true;
+      user.save();
+    }
+  }
+
+  User.prototype.serializeAuthenticatedUser = function(){
+    let serialized;
+    const user = this;
+
+    serialized = {
+      //id: user.id,
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      token: jwt.sign({email: user.email, id: user.id}, process.env.JWT_SECRET)
+    }
+    return serialized;
+  }
+
   return User;
 };
