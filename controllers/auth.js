@@ -2,11 +2,8 @@ const User = require('../models').User;
 const {Op} = require('sequelize');
 const validator = require('validator');
 const bcrypt = require('bcrypt')
-const {totp} = require('otplib')
 
 const {SendWelcomeEmail, SendEmailVerificationEmail, SendPasswordResetEmail} = require('../util/email/send');
-
-totp.options = {digit: 4, step: 60}
 
 exports.signup = async (req,res) => {
     const data = req.body || {};
@@ -49,8 +46,8 @@ exports.signup = async (req,res) => {
         data.OTP = Math.round(Math.random() * (max - min) + min);
         data.OTPCreatedAt = Date.now();
         const user = await User.create(data);
-        await SendWelcomeEmail({email: user.email, otp: user.OTP});
-        await SendEmailVerificationEmail({email: user.email, otp: user.OTP});
+        // await SendWelcomeEmail({email: user.email, otp: user.OTP});
+        // await SendEmailVerificationEmail({email: user.email, otp: user.OTP});
         return res.send(user.serializeAuthenticatedUser())
     }
     catch(e){

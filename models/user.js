@@ -46,6 +46,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
+    avatar: {
+      type: DataTypes.BLOB('long')
+    },
     OTP: {
       type: DataTypes.INTEGER,
     },
@@ -90,7 +93,7 @@ module.exports = (sequelize, DataTypes) => {
     const user = this;
 
     serialized = {
-      //id: user.id,
+      id: user.id,
       name: user.name,
       username: user.username,
       email: user.email,

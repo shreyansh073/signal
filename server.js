@@ -39,7 +39,7 @@ fs.readdirSync(path.join(__dirname, 'routes')).map((file) => {
 });
 
 (async () => {
-	await models.sequelize.sync({ force: true });
+	await models.sequelize.sync({ force: false });
 
 	// Code here
   })();
