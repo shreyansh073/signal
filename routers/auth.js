@@ -4,8 +4,10 @@ const validator = require('validator');
 const bcrypt = require('bcrypt')
 
 const {SendWelcomeEmail, SendEmailVerificationEmail, SendPasswordResetEmail} = require('../util/email/send');
+const express = require('express')
+const router = new express.Router()
 
-exports.signup = async (req,res) => {
+router.post('/auth/signup', async (req,res) => {
     const data = req.body || {};
 
     if (!(data.email && data.password && data.name && data.username)) {
@@ -53,38 +55,9 @@ exports.signup = async (req,res) => {
     catch(e){
         res.status(400).send('cannot create user')
     }        
-}
+})
 
-exports.verifyEmail = async (req,res) => {
-    const user = User.findOne({where: {email: req.body.email}})
-    if(user){
-        await user.setOTP();
-        await SendEmailVerificationEmail({email: user.email, otp: user.OTP});
-    }
-    else{
-        res.status(400).send('invalid email');
-    }
-    res.send('email verification email sent');
-}
-
-exports.verifyOTP = async (req,res) => {
-    const user = await User.findOne({where: {email: req.body.email}})
-    
-    if(user){
-        console.log(user)
-        if(user.isValidOTP(req.body.otp)){        
-            res.send({isVerified: true})
-        }
-        else{
-            res.send({isVerified: false})
-        }
-    }
-    else{
-        res.status(400).send('invalid email')
-    }    
-}
-
-exports.login = async (req,res) => {
+router.post('/auth/login', async (req,res) => {
     const data = req.body || {};
 
     if (!((data.email || data.username) && data.password)) {
@@ -113,9 +86,9 @@ exports.login = async (req,res) => {
         res.status(400).send('invalid email or password') 
     }
     res.send(user.serializeAuthenticatedUser())
-}
+})
 
-exports.forgotPassword = async (req,res) => {
+router.post('/auth/forgot-password', async (req,res) => {
     const user = await User.findOne({where: {email: req.body.email}})
     if(user){
         await user.setOTP();
@@ -125,9 +98,9 @@ exports.forgotPassword = async (req,res) => {
         res.status(400).send('invalid email');
     }
     res.send('password reset email sent')
-}
+})
 
-exports.resetPassword = async (req,res) => {
+router.post('/auth/reset-password',async (req,res) => {
     const pass = await bcrypt.hash(req.body.password, 8)
     let user;
     try{
@@ -148,4 +121,35 @@ exports.resetPassword = async (req,res) => {
 	}
 
     res.status(200).send(user.serializeAuthenticatedUser());
+})
+
+router.post('/auth/verify-otp', async (req,res) => {
+    const user = await User.findOne({where: {email: req.body.email}})
+    
+    if(user){
+        console.log(user)
+        if(user.isValidOTP(req.body.otp)){        
+            res.send({isVerified: true})
+        }
+        else{
+            res.send({isVerified: false})
+        }
+    }
+    else{
+        res.status(400).send('invalid email')
+    }    
+})
+
+router.post('/auth/verify-email', async (req,res) => {
+    const user = User.findOne({where: {email: req.body.email}})
+    if(user){
+        await user.setOTP();
+        await SendEmailVerificationEmail({email: user.email, otp: user.OTP});
+    }
+    else{
+        res.status(400).send('invalid email');
+    }
+    res.send('email verification email sent');
 }
+)
+module.exports = router

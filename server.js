@@ -3,49 +3,23 @@ require('dotenv').config()
 const express = require('express')
 const jwt = require('express-jwt')
 const models = require('./models');
-const fs = require('fs')
+
 const path = require('path');
 
-
+const userRouter = require('./routers/user')
+const authRouter = require('./routers/auth')
 
 const api = express()
+
 const port = process.env.PORT
 
 api.use(express.json())
 
-api.use(
-	jwt({ secret: process.env.JWT_SECRET , algorithms: ['HS256'] }).unless({
-		path: [
-			'/',
-			'/auth/signup',
-			'/auth/login',
-			'/auth/forgot-password',
-			'/auth/reset-password',
-			'/auth/verify-otp',
-			'/auth/verify-email'
-		],
-	}),
-);
+api.use(authRouter)
+api.use(userRouter)
 
-api.use(function catchAuthErrors(err, req, res, next) {
-	if (err.name === 'UnauthorizedError') {
-		res.status(401).send('Missing authentication credentials.');
-	}
-	next()
+models.sequelize.sync().then(function(){
+	api.listen(port, () => {
+		console.log('Server is up on port ' + port)
+	})
 });
-
-fs.readdirSync(path.join(__dirname, 'routes')).map((file) => {
-	require('./routes/' + file)(api);
-});
-
-(async () => {
-	await models.sequelize.sync({ force: false });
-
-	// Code here
-  })();
-
-
-api.listen(port, () => {
-    console.log('Server is up on port ' + port)
-})
-
