@@ -3,7 +3,7 @@ const {Op} = require('sequelize');
 const validator = require('validator');
 const bcrypt = require('bcrypt')
 const {getStreamClient} = require('../util/stream')
-const {isValidUsername} = require('../util/util')
+const {isValidUsername, isValidPassword} = require('../util/util')
 const {SendWelcomeEmail, SendEmailVerificationEmail, SendPasswordResetEmail} = require('../util/email/send');
 const express = require('express')
 const router = new express.Router()
@@ -24,7 +24,13 @@ router.post('/auth/signup', async (req,res) => {
 		return res.status(400).json({
 			error: 'Usernames must be valid',
 		});
-	}
+    }
+    
+    if (data.password && !isValidPassword(data.password)){
+        return res.status(400).json({
+			error: 'Password must be minimum 8 characters long',
+		});
+    }
 
 	data.username = data.username.trim();
 	data.email = data.email.trim();
@@ -100,7 +106,13 @@ router.post('/auth/forgot-password', async (req,res) => {
 })
 
 router.post('/auth/reset-password',async (req,res) => {
-    const pass = await bcrypt.hash(req.body.password, 8)
+    const password = req.body.password;
+    if (password && !isValidPassword(password)){
+        return res.status(400).json({
+			error: 'Password must be minimum 8 characters long',
+		});
+    }
+    const pass = await bcrypt.hash(password, 8)
     let user;
     try{
         user = await User.update({
@@ -112,8 +124,7 @@ router.post('/auth/reset-password',async (req,res) => {
         });
     }catch(err){
         console.log(err)
-    }
-    
+    }    
 
     if (!user) {
 		return res.status(404).json({ error: 'Resource could not be found.' });

@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
       unique: true,
       allowNull: false,
       validate: {
-        isAlphanumeric: true
+        is: /^[a-zA-Z0-9_]+$/i
       }
     },
     email: {
