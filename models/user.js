@@ -52,7 +52,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: false
     },
     avatar: {
-      type: DataTypes.BLOB('long')
+      type: DataTypes.BLOB('tiny')
     },
     bio: {
       type: DataTypes.STRING
