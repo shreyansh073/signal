@@ -2,6 +2,7 @@ const User = require('../models').User;
 const {Op} = require('sequelize');
 const validator = require('validator');
 const bcrypt = require('bcrypt')
+const {getStreamClient} = require('../util/stream')
 
 const {SendWelcomeEmail, SendEmailVerificationEmail, SendPasswordResetEmail} = require('../util/email/send');
 const express = require('express')
@@ -48,9 +49,12 @@ router.post('/auth/signup', async (req,res) => {
         data.OTP = Math.round(Math.random() * (max - min) + min);
         data.OTPCreatedAt = Date.now();
         const user = await User.create(data);
-        // await SendWelcomeEmail({email: user.email, otp: user.OTP});
-        // await SendEmailVerificationEmail({email: user.email, otp: user.OTP});
-        return res.send(user.serializeAuthenticatedUser())
+        
+        res.send(user.serializeAuthenticatedUser())
+
+        // here if the following calls throw error then a 400 response will be sent again
+        // SendWelcomeEmail({email: user.email, otp: user.OTP});
+        // SendEmailVerificationEmail({email: user.email, otp: user.OTP});
     }
     catch(e){
         res.status(400).send('cannot create user')
@@ -127,7 +131,6 @@ router.post('/auth/verify-otp', async (req,res) => {
     const user = await User.findOne({where: {email: req.body.email}})
     
     if(user){
-        console.log(user)
         if(user.isValidOTP(req.body.otp)){        
             res.send({isVerified: true})
         }

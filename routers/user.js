@@ -1,8 +1,11 @@
 const User = require('../models').User;
+const Post = require('../models').Post;
+
 const sharp = require('sharp');
 const multer = require('multer');
 
 const auth = require('../middleware/auth')
+const {getStreamClient} = require('../util/stream')
 
 const express = require('express')
 const router = new express.Router()
@@ -10,11 +13,39 @@ const router = new express.Router()
 router.get('/user/me', auth, async (req,res) => {
     return res.send(req.user)
 })
+
+router.patch('/users/me', auth, async (req, res) => {
+    const updates = Object.keys(req.body)
+    const allowedUpdates = ['name', 'bio', 'work', 'location']
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+
+    if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid updates!' })
+    }
+
+    try {
+        updates.forEach((update) => req.user[update] = req.body[update])
+        await req.user.save()
+        res.send(req.user)
+    } catch (e) {
+        res.status(400).send(e)
+    }
+})
+
+router.get('/user/exists',auth, (req,res) => {
+    if(req.user){
+        res.send({exists: true})
+    }
+    else{
+        res.send({exists: false})
+    }
+})
+
 const storage = multer.memoryStorage()
-const upload = multer({                 // No dest parameter provided because we
-    limits: {                           // do not want to save the image in the 
-        fileSize: 1000000               // filesystem. We wanna access the binary
-    },                                  // data in the router function.
+const upload = multer({                 
+    limits: {                           
+        fileSize: 1000000              
+    },                                 
     fileFilter(req, file, cb) {
         if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
             return cb(new Error('Please provide a jpg, jpeg or png file'));

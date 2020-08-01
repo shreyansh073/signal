@@ -1,10 +1,13 @@
 'use strict';
 const bcrypt = require('bcrypt')
 const {SendEmailVerificationEmail} = require('../util/email/send');
+const {getStreamClient} = require('../util/stream')
 const jwt = require('jsonwebtoken')
+
 const {
   Model
 } = require('sequelize');
+const { connect } = require('getstream');
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -15,6 +18,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      this.myAssociation = this.hasMany(models.Post)
+      this.myAssociation = this.belongsToMany(models.User, {as: 'Destination',foreignKey: 'SourceId', through: 'Follow'})    
     }
   };
 
@@ -48,6 +53,15 @@ module.exports = (sequelize, DataTypes) => {
     },
     avatar: {
       type: DataTypes.BLOB('long')
+    },
+    bio: {
+      type: DataTypes.STRING
+    },
+    work: {
+      type: DataTypes.STRING
+    },
+    location: {
+      type: DataTypes.STRING
     },
     OTP: {
       type: DataTypes.INTEGER,
@@ -92,11 +106,15 @@ module.exports = (sequelize, DataTypes) => {
     let serialized;
     const user = this;
 
+    let streamToken = getStreamClient().createUserToken(`${user.id}`)
+
     serialized = {
       id: user.id,
       name: user.name,
       username: user.username,
       email: user.email,
+      createdAt: user.createdAt,
+      streamToken: streamToken,
       token: jwt.sign({email: user.email, id: user.id}, process.env.JWT_SECRET)
     }
     return serialized;
