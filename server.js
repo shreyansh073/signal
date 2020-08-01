@@ -22,7 +22,7 @@ api.use(userRouter)
 api.use(postRouter)
 api.use(followRouter)
 
-models.sequelize.sync({force: false}).then(function(){
+models.sequelize.sync({force: true}).then(function(){
 	api.listen(port, () => {
 		console.log('Server is up on port ' + port)
 	})
