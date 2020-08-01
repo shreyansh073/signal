@@ -7,6 +7,7 @@ const {isValidUsername} = require('../util/util')
 const {SendWelcomeEmail, SendEmailVerificationEmail, SendPasswordResetEmail} = require('../util/email/send');
 const express = require('express')
 const router = new express.Router()
+const auth = require('../middleware/auth')
 
 router.post('/auth/signup', async (req,res) => {
     const data = req.body || {};

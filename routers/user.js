@@ -6,6 +6,7 @@ const multer = require('multer');
 
 const auth = require('../middleware/auth')
 const {getStreamClient} = require('../util/stream')
+const {isValidUsername} = require('../util/util')
 
 const express = require('express')
 const router = new express.Router()
@@ -32,8 +33,12 @@ router.patch('/users/me', auth, async (req, res) => {
     }
 })
 
-router.get('/user/exists',auth, (req,res) => {
-    if(req.user){
+router.get('/user/exists', async (req,res) => {
+    if(!isValidUsername(req.body.username)){
+        return res.status(400).send('invalid username')
+    }
+    const user = await User.findOne({where: { username: req.body.username}})
+    if(user){
         res.send({exists: true})
     }
     else{
