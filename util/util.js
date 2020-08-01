@@ -1,7 +1,7 @@
 const validator = require('validator')
 
 function isValidUsername(username){
-    const regex = RegExp('^[a-zA-Z0-9_]+$')
+    const regex = RegExp('^[a-zA-Z0-9_.]+$')
     return regex.test(username)
 }
 
