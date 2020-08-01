@@ -3,7 +3,7 @@ const {Op} = require('sequelize');
 const validator = require('validator');
 const bcrypt = require('bcrypt')
 const {getStreamClient} = require('../util/stream')
-
+const {isValidUsername} = require('../util/util')
 const {SendWelcomeEmail, SendEmailVerificationEmail, SendPasswordResetEmail} = require('../util/email/send');
 const express = require('express')
 const router = new express.Router()
@@ -19,9 +19,9 @@ router.post('/auth/signup', async (req,res) => {
 		return res.status(400).json({ error: 'Invalid or malformed email address.' });
 	}
 
-	if (data.username && !validator.isAlphanumeric(data.username)) {
+	if (data.username && !isValidUsername(data.username)) {
 		return res.status(400).json({
-			error: 'Usernames must be alphanumeric',
+			error: 'Usernames must be valid',
 		});
 	}
 
@@ -53,8 +53,7 @@ router.post('/auth/signup', async (req,res) => {
         res.send(user.serializeAuthenticatedUser())
 
         // here if the following calls throw error then a 400 response will be sent again
-        // SendWelcomeEmail({email: user.email, otp: user.OTP});
-        // SendEmailVerificationEmail({email: user.email, otp: user.OTP});
+        SendEmailVerificationEmail({email: user.email, otp: user.OTP});
     }
     catch(e){
         res.status(400).send('cannot create user')
@@ -62,28 +61,23 @@ router.post('/auth/signup', async (req,res) => {
 })
 
 router.post('/auth/login', async (req,res) => {
-    const data = req.body || {};
+    const data = req.body || {};    
 
-    if (!((data.email || data.username) && data.password)) {
+    if (!data.input || !data.password) {
 		return res.status(400).json({ error: 'Missing required fields.' });
     }
 
-    if (data.email && !validator.isEmail(data.email)) {
-		return res.status(400).json({ error: 'Invalid or malformed email address.' });
-	}
-
-	if (data.username && !validator.isAlphanumeric(data.username)) {
-		return res.status(400).json({
-			error: 'Usernames must be alphanumeric',
-		});
-	}
-
     let user;
-    if(data.email){
-        user = await User.findOne({where: {email: data.email}})
+    if(validator.isEmail(data.input)){
+        user = await User.findOne({where: {email: data.input}})
     }
-    else if(data.username){
+    else if(isValidUsername(data.input)){
         user = await User.findOne({where: {username: data.username}})
+    }
+    else{
+        return res.status(400).json({
+			error: 'invalid username or email',
+		});
     }
         
     if(!user || !(await user.validPassword(data.password))){
@@ -155,4 +149,9 @@ router.post('/auth/verify-email', async (req,res) => {
     res.send('email verification email sent');
 }
 )
+
+router.post('/auth/welcome', auth, (req,res) => {
+    const user = req.user;
+    SendWelcomeEmail({email: user.email, name: user.OTP});
+})
 module.exports = router
