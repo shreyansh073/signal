@@ -128,26 +128,34 @@ router.post('/auth/reset-password',async (req,res) => {
     const pass = await bcrypt.hash(password, 8)
     let user;
     try{
-        user = await User.update({
-            password: pass
-        },{
+        user = await User.findOne({
             where: {
-                email: req.body.email
+                [Op.or]: [
+                    { email: req.body.input }, 
+                    { username: req.body.input }
+                ]
             }
         });
+        if (!user) {
+            return res.status(404).json({ error: 'Resource could not be found.' });
+        }
+        user.password = pass;
+        await user.save();
     }catch(err){
         console.log(err)
-    }    
-
-    if (!user) {
-		return res.status(404).json({ error: 'Resource could not be found.' });
-	}
-
+    }
     res.status(200).send(user.serializeAuthenticatedUser());
 })
 
 router.post('/auth/verify-otp', async (req,res) => {
-    const user = await User.findOne({where: {email: req.body.email}})
+    const user = await User.findOne({
+        where: {
+            [Op.or]: [
+                { email: req.body.input }, 
+                { username: req.body.input }
+            ]
+        }
+    });
     
     if(user){
         if(user.isValidOTP(req.body.otp)){        
