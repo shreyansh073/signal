@@ -85,24 +85,37 @@ router.post('/auth/login', async (req,res) => {
         return res.status(400).json({
 			error: 'invalid username or email',
 		});
+    }        
+    if(!user){
+        return res.status(409).json({
+			error: 'invalid username or email',
+		});
     }
-        
-    if(!user || !(await user.validPassword(data.password))){
-        res.status(400).send('invalid email or password') 
+    if(!(await user.validPassword(data.password))){
+        return res.status(400).json({
+			error: 'invalid password',
+		});
     }
     res.send(user.serializeAuthenticatedUser())
 })
 
 router.post('/auth/forgot-password', async (req,res) => {
-    const user = await User.findOne({where: {email: req.body.email}})
+    const user = await User.findOne({
+        where: {
+            [Op.or]: [
+                { email: req.body.input }, 
+                { username: req.body.input }
+            ]
+        }
+	});
     if(user){
         await user.setOTP();
-        await SendPasswordResetEmail({email: user.email, otp: user.OTP})
+        await SendPasswordResetEmail({email: user.email, otp: user.OTP});
+        res.send('password reset email sent');
     }
     else{
-        res.status(400).send('invalid email');
+        return res.status(400).send('invalid username or email');
     }
-    res.send('password reset email sent')
 })
 
 router.post('/auth/reset-password',async (req,res) => {

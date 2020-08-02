@@ -37,8 +37,8 @@ router.post('/posts/new', auth, async (req,res)=>{
 })
 
 router.get('/posts/:id',auth, async (req,res) => {
-    console.log(req.params)
-    const id = req.params.id
+    console.log(req.query)
+    const id = req.query.id
     try{
         const post = await Post.findOne({where: {id: id, ownerId: req.user.id}})
         res.send(post)        
@@ -49,7 +49,7 @@ router.get('/posts/:id',auth, async (req,res) => {
 })
 
 router.delete('/posts/:id',auth, async (req,res) => {
-    const id = req.params.id
+    const id = req.query.id
     try{
         const post = await Post.findOne({where: {id: id, ownerId: req.user.id}})
         

@@ -34,10 +34,10 @@ router.patch('/users/me', auth, async (req, res) => {
 })
 
 router.get('/user/exists', async (req,res) => {
-    if(!isValidUsername(req.body.username)){
+    if(!isValidUsername(req.query.username)){
         return res.status(400).send('invalid username')
     }
-    const user = await User.findOne({where: { username: req.body.username}})
+    const user = await User.findOne({where: { username: req.query.username}})
     if(user){
         res.send({exists: true})
     }
