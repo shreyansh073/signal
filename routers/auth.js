@@ -79,7 +79,7 @@ router.post('/auth/login', async (req,res) => {
         user = await User.findOne({where: {email: data.input}})
     }
     else if(isValidUsername(data.input)){
-        user = await User.findOne({where: {username: data.username}})
+        user = await User.findOne({where: {username: data.input}})
     }
     else{
         return res.status(400).json({
