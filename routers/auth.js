@@ -82,7 +82,7 @@ router.post('/auth/login', async (req,res) => {
         user = await User.findOne({where: {username: data.input}})
     }
     else{
-        return res.status(400).json({
+        return res.status(409).json({
 			error: 'invalid username or email',
 		});
     }        
@@ -171,13 +171,20 @@ router.post('/auth/verify-otp', async (req,res) => {
 })
 
 router.post('/auth/verify-email', async (req,res) => {
-    const user = User.findOne({where: {email: req.body.email}})
+    const user = await User.findOne({
+        where: {
+            [Op.or]: [
+                { email: req.body.input }, 
+                { username: req.body.input }
+            ]
+        }
+    });
     if(user){
         await user.setOTP();
         await SendEmailVerificationEmail({email: user.email, otp: user.OTP});
     }
     else{
-        res.status(400).send('invalid email');
+        res.status(409).send('invalid email or username');
     }
     res.send('email verification email sent');
 }
