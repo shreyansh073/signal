@@ -12,12 +12,13 @@ const express = require('express')
 const router = new express.Router()
 
 router.get('/user/me', auth, async (req,res) => {
-    return res.send(req.user)
+    return res.send(req.user.serializeAuthenticatedUser())
 })
 
 router.patch('/users/me', auth, async (req, res) => {
     const updates = Object.keys(req.body)
-    const allowedUpdates = ['name', 'bio', 'work', 'location']
+    //ensure username is unique
+    const allowedUpdates = ['name', 'bio', 'work', 'school', 'username'];
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
 
     if (!isValidOperation) {
@@ -27,7 +28,7 @@ router.patch('/users/me', auth, async (req, res) => {
     try {
         updates.forEach((update) => req.user[update] = req.body[update])
         await req.user.save()
-        res.send(req.user)
+        res.send(req.user.serializeAuthenticatedUser())
     } catch (e) {
         res.status(400).send(e)
     }

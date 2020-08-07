@@ -12,7 +12,6 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.myAssociation = this.belongsTo(models.User, {as: 'owner'})
-      this.myAssociation = this.hasOne(models.Post, {as: 'repin'})
     }
   };
   Post.init({
@@ -26,11 +25,13 @@ module.exports = (sequelize, DataTypes) => {
         isUrl: true
       }
     },
-    likes: {
-      type: DataTypes.INTEGER
+    likeCount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
     },
-    repins: {
-      type: DataTypes.INTEGER
+    repinCount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
     }
   }, {
     sequelize,

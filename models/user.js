@@ -61,8 +61,23 @@ module.exports = (sequelize, DataTypes) => {
     work: {
       type: DataTypes.STRING
     },
+    school: {
+      type: DataTypes.STRING
+    },
     location: {
       type: DataTypes.STRING
+    },
+    postCount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
+    followerCount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
+    followingCount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
     },
     OTP: {
       type: DataTypes.INTEGER,
@@ -113,7 +128,12 @@ module.exports = (sequelize, DataTypes) => {
       id: user.id,
       name: user.name,
       username: user.username,
-      email: user.email,
+      bio: user.bio,
+      school: user.school,
+      work: user.work,
+      followerCount: user.followerCount,
+      followingCount: user.followingCount,
+      postCount: user.postCount,
       createdAt: user.createdAt,
       streamToken: streamToken,
       token: jwt.sign({email: user.email, id: user.id}, process.env.JWT_SECRET)
