@@ -12,6 +12,8 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.myAssociation = this.belongsTo(models.User, {as: 'owner'})
+      this.myAssociation = this.belongsTo(models.User, {as: 'repinnedFrom'})
+      this.myAssociation = this.belongsToMany(models.User, {through: 'Repinner'})
     }
   };
   Post.init({
@@ -24,6 +26,21 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         isUrl: true
       }
+    },
+    ogTitle: {
+      type: DataTypes.STRING
+    },
+    ogDescription: {
+      type: DataTypes.STRING
+    },
+    ogImageUrl: {
+      type: DataTypes.STRING
+    },
+    ogSiteName: {
+      type: DataTypes.STRING
+    },
+    ogType: {
+      type: DataTypes.STRING
     },
     likeCount: {
       type: DataTypes.INTEGER,
