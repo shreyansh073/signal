@@ -10,6 +10,7 @@ const userRouter = require('./routers/user')
 const authRouter = require('./routers/auth')
 const postRouter = require('./routers/post')
 const followRouter = require('./routers/follow')
+const feedRouter = require('./routers/feed')
 
 const api = express()
 
@@ -20,6 +21,7 @@ api.use(express.json())
 api.use(authRouter)
 api.use(userRouter)
 api.use(postRouter)
+api.use(feedRouter)
 api.use(followRouter)
 
 models.sequelize.sync({force: false}).then(function(){

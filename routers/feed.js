@@ -5,8 +5,8 @@ const {getStreamClient} = require('../util/stream')
 const express = require('express')
 const router = new express.Router()
 
-router.get('/feed/user-feed', auth, async (req,res) =>{
-    const limit = req.query.per_page || 10;
+router.get('/feed/home-feed', auth, async (req,res) =>{
+    const limit = req.query.per_page || 30;
     const offset = req.query.page * limit || 0;
     
     try{
@@ -45,3 +45,22 @@ router.get('/feed/user-feed', auth, async (req,res) =>{
         }
     
 })
+
+router.get('/feed/profile-feed', auth, async (req,res) => {
+    const limit = req.query.per_page || 30;
+    const offset = req.query.page * limit || 0;
+
+    try{
+        const posts = await Post.findAll({
+            where: {ownerId: req.query.id},
+            limit: limit,
+            offset: offset,
+            order: [['createdAt', 'DESC']]
+        });    
+        res.send(posts);
+    }catch(e){
+        res.status(400).send('could not fetch posts')
+    }    
+});
+
+module.exports = router
