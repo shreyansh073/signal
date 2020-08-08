@@ -1,4 +1,5 @@
 const Post = require('../models').Post;
+const User = require('../models').User;
 const ogs = require('open-graph-scraper');
 const auth = require('../middleware/auth')
 const {getStreamClient} = require('../util/stream')
@@ -26,6 +27,9 @@ router.post('/posts/new', auth, async (req,res)=>{
             ogDescription: og.ogDescription,
             ogImageUrl: og.ogImage[0] ? og.ogImage[0].url : og.ogImage.url
         });
+
+        req.user.postCount = req.user.postCount + 1;
+        req.user.save();
 
         // const feed = getStreamClient().feed('user', post.ownerId);
         // await feed.addActivity({
@@ -56,25 +60,30 @@ router.get('/posts/preview', auth, async (req,res) => {
     
 })
 
-router.get('/posts/:id',auth, async (req,res) => {
-    console.log(req.query)
-    const id = req.query.id
+router.get('/posts',auth, async (req,res) => {
     try{
-        const post = await Post.findOne({where: {id: id, ownerId: req.user.id}})
+        const post = await Post.findOne({
+            where: {id: req.query.id},
+            include: {
+                model: User,
+                as: 'owner',
+                attributes: ['username', 'name', 'id' ]
+            }
+        })
         res.send(post)        
     }catch(e){
         console.log(e)
-        res.status(400).send('could not delete post')
+        res.status(400).send('could not fetch post')
     }
 })
 
-router.delete('/posts/:id',auth, async (req,res) => {
+router.delete('/posts',auth, async (req,res) => {
     const id = req.query.id
     try{
         const post = await Post.findOne({where: {id: id, ownerId: req.user.id}})
         
         if(post){
-            await getStreamClient().feed('user', post.ownerId).removeActivity({foreignId: `post:${post.id}`})
+            //await getStreamClient().feed('user', post.ownerId).removeActivity({foreignId: `post:${post.id}`})
             await post.destroy()
             res.send()
         }

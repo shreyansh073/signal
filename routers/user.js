@@ -5,6 +5,7 @@ const sharp = require('sharp');
 const multer = require('multer');
 
 const auth = require('../middleware/auth')
+const path = require('path');
 const {getStreamClient} = require('../util/stream')
 const {isValidUsername} = require('../util/util')
 
@@ -47,11 +48,19 @@ router.get('/user/exists', async (req,res) => {
     }
 })
 
-const storage = multer.memoryStorage()
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './images')
+    },
+    filename: function (req, file, cb) {
+        cb(null, `${req.user.id}.${file.originalname.split('.').pop()}`)
+    }
+});
 const upload = multer({                 
     limits: {                           
         fileSize: 1000000              
-    },                                 
+    },
+    dest: '../images/',                                 
     fileFilter(req, file, cb) {
         if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
             return cb(new Error('Please provide a jpg, jpeg or png file'));
@@ -62,8 +71,8 @@ const upload = multer({
 })
 
 router.post('/user/avatar', auth, upload.single('avatar'), async (req,res) => {
-    const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer()
-    req.user.avatar = buffer
+    //const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer()
+    req.user.avatar = "/images/"+req.file.filename;
     await req.user.save()
     res.send()
 }, (error, req, res, next) => {
@@ -72,8 +81,8 @@ router.post('/user/avatar', auth, upload.single('avatar'), async (req,res) => {
 
 router.get('/user/avatar', auth, async (req,res)=>{
     try {
-        res.set('Content-Type', 'image/png')
-        res.send(req.user.avatar)
+        const image_path = path.join(process.cwd(), req.query.path)
+        res.sendFile(image_path);
     } catch (e) {
         res.status(404).send()
     }

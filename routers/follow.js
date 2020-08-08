@@ -12,8 +12,12 @@ router.post('/follow', auth, async (req,res)=>{
     }    
     try{
         await req.user.addDestination(dest);
-        const sourceFeed = getStreamClient().feed('timeline', req.user.id);
-        await sourceFeed.follow('user', dest.id, {limit: 20});
+        // const sourceFeed = getStreamClient().feed('timeline', req.user.id);
+        // await sourceFeed.follow('user', dest.id, {limit: 20});
+        req.user.followingCount = req.user.followingCount + 1;
+        dest.follwerCount = dest.follwerCount + 1;
+        req.user.save();
+        dest.save();
         res.send()
     }catch(e){
         res.status(400).send('can not follow user')
@@ -27,10 +31,15 @@ router.delete('/follow', auth, async (req,res)=>{
     }    
     try{
         await req.user.removeDestination(dest);
-        const sourceFeed = getStreamClient().feed('timeline', req.user.id);
-        // do we want to persist history?
-        await sourceFeed.unfollow('user', dest.id, {keepHistory: false});
+        // const sourceFeed = getStreamClient().feed('timeline', req.user.id);
+        // // do we want to persist history?
+        // await sourceFeed.unfollow('user', dest.id, {keepHistory: false});
+        req.user.followingCount = req.user.followingCount - 1;
+        dest.follwerCount = dest.follwerCount - 1;
+        req.user.save();
+        dest.save();
         res.send()
+
     }catch(e){
         res.status(400).send('can not follow user')
     }
