@@ -1,4 +1,5 @@
 const Post = require('../models').Post;
+const User = require('../models').User;
 const auth = require('../middleware/auth')
 const {getStreamClient} = require('../util/stream')
 
@@ -11,7 +12,6 @@ router.get('/feed/home-feed', auth, async (req,res) =>{
     
     try{
         const response = await getStreamClient().feed('user', req.query.userId).get({limit,offset})
-        console.log(response)
 
         let postIDs = response.results.map((r) => {
             return parseInt(r.foreign_id.split(':')[1]);
@@ -32,7 +32,6 @@ router.get('/feed/home-feed', auth, async (req,res) =>{
                 }
             ]
         });
-        console.log(posts)
         let postLookup = {};
 
         for (let p of posts) {

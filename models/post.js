@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
   };
   Post.init({
     description: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
     },
     url: {
       type: DataTypes.STRING,
@@ -31,10 +31,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING
     },
     ogDescription: {
-      type: DataTypes.STRING
+      type: DataTypes.TEXT
     },
     ogImageUrl: {
-      type: DataTypes.STRING
+      type: DataTypes.TEXT
     },
     ogSiteName: {
       type: DataTypes.STRING
