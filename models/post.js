@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       this.myAssociation = this.belongsTo(models.User, {as: 'owner'})
       this.myAssociation = this.belongsTo(models.User, {as: 'repinnedFrom'})
-      this.myAssociation = this.belongsToMany(models.User, {through: 'Repinner'})
+      this.myAssociation = this.belongsToMany(models.User, {through: 'repinners'})
     }
   };
   Post.init({

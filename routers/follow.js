@@ -6,18 +6,25 @@ const express = require('express')
 const router = new express.Router()
 
 router.post('/follow', auth, async (req,res)=>{
+    if(req.user.id === req.body.id){
+        return res.status(402).send('cannot follow yourself')
+    }
     const dest = await User.findOne({where: {id:req.body.id}})
     if(!dest){
         res.status(400).send('can not follow user')
     }    
     try{
+        if(await req.user.hasDestination(dest)){
+            return res.status(401).send('already follows user')
+        }
         await req.user.addDestination(dest);
         // const sourceFeed = getStreamClient().feed('timeline', req.user.id);
         // await sourceFeed.follow('user', dest.id, {limit: 20});
         req.user.followingCount = req.user.followingCount + 1;
-        dest.follwerCount = dest.follwerCount + 1;
-        req.user.save();
-        dest.save();
+        await req.user.save();
+
+        dest.followerCount = dest.followerCount + 1;
+        await dest.save();
         res.send()
     }catch(e){
         res.status(400).send('can not follow user')
@@ -35,9 +42,9 @@ router.delete('/follow', auth, async (req,res)=>{
         // // do we want to persist history?
         // await sourceFeed.unfollow('user', dest.id, {keepHistory: false});
         req.user.followingCount = req.user.followingCount - 1;
-        dest.follwerCount = dest.follwerCount - 1;
-        req.user.save();
-        dest.save();
+        dest.followerCount = dest.followerCount - 1;
+        await req.user.save();
+        await dest.save();
         res.send()
 
     }catch(e){
@@ -45,8 +52,15 @@ router.delete('/follow', auth, async (req,res)=>{
     }
 })
 
-router.get('/follow/following', auth, async (req,res) => {
-    res.send(req.user.hasDestination())
+router.get('/follow/does-follow', auth, async (req,res) => {
+    try{
+        const dest = await User.findOne({where: {id:req.query.id}})
+        const status = await req.user.hasDestination(dest)
+        res.send(status)
+    }catch(e){
+        res.status(400).send('error')
+    }
+    
 })
 
 module.exports = router

@@ -6,6 +6,7 @@ const multer = require('multer');
 
 const auth = require('../middleware/auth')
 const path = require('path');
+const fs = require('fs');
 const {getStreamClient} = require('../util/stream')
 const {isValidUsername} = require('../util/util')
 
@@ -71,9 +72,12 @@ const upload = multer({
 })
 
 router.post('/user/avatar', auth, upload.single('avatar'), async (req,res) => {
-    //const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer()
-    req.user.avatar = "/images/"+req.file.filename;
-    await req.user.save()
+    req.user.avatarUrl = "/images/"+req.file.filename; 
+    await fs.readFile(path.join(process.cwd(), "/images/"+req.file.filename), async (err, filebuffer) =>{
+        const buffer = await sharp(filebuffer).resize({ width: 250, height: 250 }).png().toBuffer()
+        req.user.avatar = buffer
+        await req.user.save()
+    })
     res.send()
 }, (error, req, res, next) => {
     res.status(400).send({ error: error.message })
@@ -90,6 +94,7 @@ router.get('/user/avatar', auth, async (req,res)=>{
 
 router.delete('/user/avatar', auth, async (req,res) => {
     req.user.avatar = null;
+    req.user.avatarUrl = null;
     await req.user.save()
     res.send()
 })

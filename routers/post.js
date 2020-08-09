@@ -15,11 +15,19 @@ router.post('/posts/new', auth, async (req,res)=>{
     const ogtemp = await ogs({url: req.body.url});
     const og = ogtemp.result;
     try{
+        if(req.body.repinnedFromId && req.body.repinnedFromPostId){
+            const repinnedFromPost = await Post.findOne({where: {id: req.body.repinnedFromPostId}});
+            repinnedFromPost.repinCount = repinnedFromPost.repinCount + 1;
+            await repinnedFromPost.addUser(req.user)
+            await repinnedFromPost.save()
+        }
 
         const post = await Post.create({
             //assuming in case of repin, 
             //the repin post id will be sent from client
-            ...req.body, 
+            description: req.body.description,
+            url: req.body.url,
+            repinnedFromId: req.body.repinnedFromId, 
             ownerId: req.user.id,
             ogSiteName: og.ogSiteName,
             ogTitle: og.ogTitle,
@@ -47,6 +55,17 @@ router.post('/posts/new', auth, async (req,res)=>{
     }    
 })
 
+router.get('/posts/repinners', auth, async (req,res) => {
+    try{
+        const post = await Post.findOne({where: {id: req.query.id}});
+        const repinners = await post.getUsers({ attributes: ['username', 'name', 'avatarUrl']})
+        res.send(repinners)
+    }catch(e){
+        res.status(400).send('error')
+    }
+    
+})
+
 router.get('/posts/preview', auth, async (req,res) => {
     try{
         const og = await ogs({url: req.query.url});
@@ -64,11 +83,18 @@ router.get('/posts',auth, async (req,res) => {
     try{
         const post = await Post.findOne({
             where: {id: req.query.id},
-            include: {
-                model: User,
-                as: 'owner',
-                attributes: ['username', 'name', 'id' ]
-            }
+            include: [
+                {
+                    model: User,
+                    as: 'owner',
+                    attributes: ['username', 'name', 'id', 'avatarUrl']
+                },
+                {
+                    model: User,
+                    as: 'repinnedFrom',
+                    attributes: ['username'] 
+                }
+            ]
         })
         res.send(post)        
     }catch(e){

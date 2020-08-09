@@ -55,6 +55,9 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: false
     },
     avatar: {
+      type: DataTypes.BLOB('tiny')
+    },
+    avatarUrl: {
       type: DataTypes.STRING
     },
     bio: {
@@ -136,6 +139,7 @@ module.exports = (sequelize, DataTypes) => {
       followerCount: user.followerCount,
       followingCount: user.followingCount,
       postCount: user.postCount,
+      avatarUrl: user.avatarUrl,
       createdAt: user.createdAt,
       streamToken: streamToken,
       token: jwt.sign({email: user.email, id: user.id}, process.env.JWT_SECRET)
