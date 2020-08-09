@@ -68,7 +68,12 @@ router.get('/feed/profile-feed', auth, async (req,res) => {
             where: {ownerId: req.query.id},
             limit: limit,
             offset: offset,
-            order: [['createdAt', 'DESC']]
+            order: [['createdAt', 'DESC']],
+            include: {
+                model: User,
+                as: 'repinnedFrom',
+                attributes: ['username', 'id'] 
+            }
         });    
         res.send(posts);
     }catch(e){

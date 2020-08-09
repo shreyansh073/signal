@@ -86,7 +86,7 @@ router.post('/posts/new', auth, async (req,res)=>{
 router.get('/posts/repinners', auth, async (req,res) => {
     try{
         const post = await Post.findOne({where: {id: req.query.id}});
-        const repinners = await post.getUsers({ attributes: ['username', 'name', 'avatarUrl']})
+        const repinners = await post.getUsers({ attributes: ['id','username', 'name', 'avatarUrl', 'work', 'school']})
         res.send(repinners)
     }catch(e){
         res.status(400).send('error')
@@ -126,7 +126,7 @@ router.get('/posts',auth, async (req,res) => {
                 {
                     model: User,
                     as: 'repinnedFrom',
-                    attributes: ['username'] 
+                    attributes: ['username', 'id'] 
                 }
             ]
         })

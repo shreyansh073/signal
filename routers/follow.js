@@ -1,7 +1,7 @@
 const User = require('../models').User;
 const auth = require('../middleware/auth')
 const {getStreamClient} = require('../util/stream')
-
+const { Op } = require("sequelize");
 const express = require('express')
 const router = new express.Router()
 
@@ -62,12 +62,63 @@ router.get('/follow/does-follow', auth, async (req,res) => {
     }catch(e){
         res.status(400).send('error')
     }
-    
 })
 
+router.get('/follow/following-list', auth, async (req,res) => {
+    try{
+        const followingList = await req.user.getDestination({attributes: ['id','name', 'username', 'avatarUrl', 'work', 'school']})
+        res.send(followingList)
+    }catch(e){
+        console.log(e)
+        res.status(400).send('error')
+    }
+})
+
+router.get('/follow/follower-list', auth, async (req,res) => {
+    try{
+        const followingList = await req.user.getSource({attributes: ['id']})
+        res.send(followingList)
+    }catch(e){
+        console.log(e)
+        res.status(400).send('error')
+    }
+})
+
+router.get('/follow/following-list', auth, async (req,res) => {
+    try{
+        const followingList = await req.user.getDestination({attributes: ['id','name','username','avatarUrl', 'work','school']})
+        res.send(followingList)
+    }catch(e){
+        console.log(e)
+        res.status(400).send('error')
+    }
+})
+
+
 router.get('/follow/recommend', auth, async (req,res) => {
-    const followers = await req.user.countDestinations()
-    console.log(followers)
+    try{
+        const followingList = await req.user.getDestination({attributes: ['id']})
+        let list = followingList.map((item) => item.id)
+        list.push(req.user.id)
+        console.log(list)
+        const recommended = await User.findAll({
+            where: {
+                id: {
+                    [Op.notIn]: list
+                }
+            },
+            order: [
+                ['followerCount', 'DESC'],
+                ['postCount', 'DESC']
+            ],
+            attributes: ['id','name','username','avatarUrl', 'work','school']
+        })
+        res.send(recommended)
+    }catch(e){
+        console.log(e);
+        res.status(400).send('cant recommend')
+    }
+    
 })
 
 module.exports = router
