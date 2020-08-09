@@ -17,7 +17,21 @@ router.get('/feed/home-feed', auth, async (req,res) =>{
             return parseInt(r.foreign_id.split(':')[1]);
         });
 
-        let posts = await Post.findAll({where: {id: postIDs}});
+        let posts = await Post.findAll({
+            where: {id: postIDs},
+            include: [
+                {
+                    model: User,
+                    as: 'owner',
+                    attributes: ['username', 'name', 'id', 'avatarUrl']
+                },
+                {
+                    model: User,
+                    as: 'repinnedFrom',
+                    attributes: ['username'] 
+                }
+            ]
+        });
         console.log(posts)
         let postLookup = {};
 
