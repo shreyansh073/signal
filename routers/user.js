@@ -99,4 +99,14 @@ router.delete('/user/avatar', auth, async (req,res) => {
     res.send()
 })
 
+router.get('/user/profile', auth, async (req,res) => {
+    try{
+        const user = await User.findOne({where: { id: req.query.id}});
+        res.send(user)
+    }catch(e){
+        console.log(e);
+        res.status(400).send('could not fetch user')
+    }
+})
+
 module.exports = router

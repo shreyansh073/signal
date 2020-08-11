@@ -15,7 +15,7 @@ router.post('/follow', auth, async (req,res)=>{
     }    
     try{
         if(await req.user.hasDestination(dest)){
-            return res.status(401).send('already follows user')
+            return res.status(402).send('already follows user')
         }
         await req.user.addDestination(dest);
 

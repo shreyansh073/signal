@@ -11,7 +11,7 @@ router.get('/feed/home-feed', auth, async (req,res) =>{
     const offset = req.query.page * limit || 0;
     
     try{
-        const response = await getStreamClient().feed('user', req.query.userId).get({limit,offset})
+        const response = await getStreamClient().feed('user', req.user.id).get({limit,offset})
 
         let postIDs = response.results.map((r) => {
             return parseInt(r.foreign_id.split(':')[1]);

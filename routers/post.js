@@ -8,23 +8,23 @@ const express = require('express')
 const router = new express.Router()
 
 router.post('/posts/new', auth, async (req,res)=>{
-    let og;
-    const options = {
-        url: req.body.url, 
-        retry: 5, 
-        followRedirect: true, 
-        maxRedirects: 20, 
-        timeout: 10000
-    }
-    try{
-        const ogtemp = await ogs({options });
-        og = ogtemp.result;
-    }catch(e){
-        og = null;
-    }
+    // try{
+    //     const ogtemp = await ogs({options });
+    //     og = ogtemp.result;
+    // }catch(e){
+    //     og = null;
+    // }
     
-    console.log(og)
     try{
+        let og = await ogs({
+            url: req.body.url, 
+            retry: 5, 
+            followRedirect: true, 
+            maxRedirects: 20,
+            timeout: 10000
+        });
+        og = og.result;
+        
         if(req.body.repinnedFromId && req.body.repinnedFromPostId){
             const repinnedFromPost = await Post.findOne({where: {id: req.body.repinnedFromPostId}});
             repinnedFromPost.repinCount = repinnedFromPost.repinCount + 1;
