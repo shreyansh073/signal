@@ -54,6 +54,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
+    isOnboardingComplete: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
     avatar: {
       type: DataTypes.BLOB('tiny')
     },

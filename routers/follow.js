@@ -34,6 +34,44 @@ router.post('/follow', auth, async (req,res)=>{
     }
 })
 
+router.post('/follow/many', auth, async (req,res)=>{    
+    try{
+        const dest_users = await User.findAll({where: {id: req.body.id_list}})
+        const count = dest_users.length;
+        if(count === 0){
+            res.status(400).send('invalid ids')
+        }
+        
+        await req.user.addDestination(dest_users);
+
+        let follows = [];
+        dest_users.map((dest) => {
+            follows.push({
+                'source': `timeline:${req.user.id}`,
+                'target': `user:${dest.id}`,
+                'activity_copy_limit': 20
+            })
+        })
+
+        const client = getStreamClient();
+        await client.followMany(follows);
+
+        req.user.followingCount = req.user.followingCount + count;
+        req.user.isOnboardingComplete = true;
+        await req.user.save();
+        
+        dest_users.map(async (dest) => {
+            dest.followerCount = dest.followerCount + 1;
+            await dest.save();
+        })        
+
+        res.send()
+    }catch(e){
+        console.log(e)
+        res.status(400).send('can not follow user')
+    }
+})
+
 router.delete('/follow', auth, async (req,res)=>{
     const dest = await User.findOne({where: {id:req.body.id}})
     if(!dest){
