@@ -6,6 +6,7 @@ const models = require('./models');
 
 const path = require('path');
 
+const { adminRouter, rootPath } = require('./admin');
 const userRouter = require('./routers/user')
 const authRouter = require('./routers/auth')
 const postRouter = require('./routers/post')
@@ -17,6 +18,9 @@ const api = express()
 const port = process.env.PORT
 
 api.use(express.json())
+
+// USE ADMIN-PANEL
+api.use(rootPath, adminRouter)
 
 api.use(authRouter)
 api.use(userRouter)
