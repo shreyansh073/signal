@@ -104,8 +104,15 @@ router.get('/follow/does-follow', auth, async (req,res) => {
 
 router.get('/follow/following-list', auth, async (req,res) => {
     try{
-        const followingList = await req.user.getDestination({attributes: ['id','name', 'username', 'avatarUrl', 'work', 'school']})
-        res.send(followingList)
+        const user = await User.findOne({where: {id: req.query.id}})
+        const followingList = await user.getDestination({attributes: ['id','name', 'username', 'avatarUrl', 'work', 'school']})
+        let list = [];
+        for(i in followingList){
+            const temp = followingList[i].serializeAuthenticatedUser();
+            const val = await req.user.hasDestination(followingList[i]);
+            list.push({...temp, doesFollow: val})
+        }
+        res.send(list)
     }catch(e){
         console.log(e)
         res.status(400).send('error')
@@ -114,23 +121,27 @@ router.get('/follow/following-list', auth, async (req,res) => {
 
 router.get('/follow/follower-list', auth, async (req,res) => {
     try{
-        const followingList = await req.user.getSource({attributes: ['id']})
-        res.send(followingList)
+        const userFeed = getStreamClient().feed('user', req.query.id);
+        let followerList = await userFeed.followers();
+        let id_list = followerList.results.map((item) => {
+            const arr = item.feed_id.split(":");
+            return parseInt(arr[1]);
+        })
+        
+        const users = await User.findAll({where: {id: id_list}})
+        let list = [];
+        for(i in users){
+            const temp = users[i].serializeAuthenticatedUser();
+            const val = await req.user.hasDestination(users[i]);
+            list.push({...temp, doesFollow: val})
+        }
+        res.send(list)
     }catch(e){
         console.log(e)
         res.status(400).send('error')
     }
 })
 
-router.get('/follow/following-list', auth, async (req,res) => {
-    try{
-        const followingList = await req.user.getDestination({attributes: ['id','name','username','avatarUrl', 'work','school']})
-        res.send(followingList)
-    }catch(e){
-        console.log(e)
-        res.status(400).send('error')
-    }
-})
 
 
 router.get('/follow/recommend', auth, async (req,res) => {

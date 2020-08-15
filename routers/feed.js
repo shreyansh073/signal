@@ -9,10 +9,15 @@ const router = new express.Router()
 router.get('/feed/home-feed', auth, async (req,res) =>{
     const limit = req.query.per_page || 30;
     const offset = req.query.page * limit || 0;
-    
+    const last_activity_id = req.query.last_activity_id;
+    let response;
     try{
-        const response = await getStreamClient().feed('user', req.user.id).get({limit,offset})
-
+        if(last_activity_id){
+            response = await getStreamClient().feed('user', req.user.id).get({limit, id_lt: last_activity_id})
+        }else{
+            response = await getStreamClient().feed('user', req.user.id).get({limit,offset})
+        }        
+        console.log(response)
         let postIDs = response.results.map((r) => {
             return parseInt(r.foreign_id.split(':')[1]);
         });
@@ -51,7 +56,10 @@ router.get('/feed/home-feed', auth, async (req,res) =>{
 
             sortedposts.push(post);
         }
-        res.json(sortedposts);
+        res.json({
+            posts: sortedposts, 
+            last_activity_id: response.results[0] ? response.results[0].id : null
+        });
         }catch(e){
             console.log(e)
             res.status(400).send('could not fetch feed')
