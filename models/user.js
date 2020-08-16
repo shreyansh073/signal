@@ -144,7 +144,7 @@ module.exports = (sequelize, DataTypes) => {
       followingCount: user.followingCount,
       postCount: user.postCount,
       avatarUrl: user.avatarUrl,
-      isOnboardingComplete: isOnboardingComplete,
+      isOnboardingComplete: user.isOnboardingComplete,
       createdAt: user.createdAt,
       streamToken: streamToken,
       token: jwt.sign({email: user.email, id: user.id}, process.env.JWT_SECRET)
