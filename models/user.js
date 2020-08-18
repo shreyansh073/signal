@@ -18,10 +18,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.myAssociation = this.hasMany(models.Post, {as: 'owner'})
-      this.myAssociation = this.hasMany(models.Post, {as: 'repinnedFrom'})
-      this.myAssociation = this.belongsToMany(models.Post, {through: 'Repinner'})
-      this.myAssociation = this.belongsToMany(models.User, {as: 'Destination',foreignKey: 'SourceId', through: 'Follow'})    
+      this.myAssociation = this.belongsTo(models.Schools)
+      this.myAssociation = this.hasMany(models.Posts, {as: 'owner'})
+      this.myAssociation = this.hasMany(models.Posts, {as: 'repinnedFrom'})
+      this.myAssociation = this.belongsToMany(models.Posts, {through: models.Repinners})
+      this.myAssociation = this.belongsToMany(models.Users, {as: 'Destination',foreignKey: 'SourceId', through: models.Follows})    
     }
   };
 
@@ -70,9 +71,6 @@ module.exports = (sequelize, DataTypes) => {
     work: {
       type: DataTypes.STRING
     },
-    school: {
-      type: DataTypes.STRING
-    },
     location: {
       type: DataTypes.STRING
     },
@@ -96,7 +94,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'User',
+    modelName: 'Users',
     hooks: {
       beforeCreate: async (user) => {
         user.password = await bcrypt.hash(user.password, 8)

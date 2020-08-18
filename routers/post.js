@@ -1,5 +1,5 @@
-const Post = require('../models').Post;
-const User = require('../models').User;
+const Post = require('../models').Posts;
+const User = require('../models').Users;
 const ogs = require('open-graph-scraper');
 const auth = require('../middleware/auth')
 const {getStreamClient} = require('../util/stream')
@@ -26,8 +26,7 @@ router.post('/posts/new', auth, async (req,res)=>{
         og = og.result;
         
         if(req.body.repinnedFromId && req.body.repinnedFromPostId){
-            const repinnedFromPost = await Post.findOne({where: {id: req.body.repinnedFromPostId}});
-            repinnedFromPost.repinCount = repinnedFromPost.repinCount + 1;
+            const repinnedFromPost = await Post.findOne({where: {id: req.body.repinnedFromPostId}});            repinnedFromPost.repinCount = repinnedFromPost.repinCount + 1;
             await repinnedFromPost.addUser(req.user)
             await repinnedFromPost.save()
         }

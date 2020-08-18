@@ -1,3 +1,4 @@
+
 'use strict';
 const {
   Model
@@ -11,9 +12,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.myAssociation = this.belongsTo(models.User, {as: 'owner'})
-      this.myAssociation = this.belongsTo(models.User, {as: 'repinnedFrom'})
-      this.myAssociation = this.belongsToMany(models.User, {through: 'repinners'})
+      this.myAssociation = this.belongsTo(models.Users, {as: 'owner'})
+      this.myAssociation = this.belongsTo(models.Users, {as: 'repinnedFrom'})
+      this.myAssociation = this.belongsToMany(models.Users, {through: models.Repinners})
     }
   };
   Post.init({
@@ -52,7 +53,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'Post',
+    modelName: 'Posts',
   });
   return Post;
 };

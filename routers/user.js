@@ -1,5 +1,6 @@
-const User = require('../models').User;
-const Post = require('../models').Post;
+const User = require('../models').Users;
+const Post = require('../models').Posts;
+const School = require('../models').Schools;
 
 const sharp = require('sharp');
 const multer = require('multer');
@@ -20,7 +21,7 @@ router.get('/user/me', auth, async (req,res) => {
 router.patch('/users/me', auth, async (req, res) => {
     const updates = Object.keys(req.body)
     //ensure username is unique
-    const allowedUpdates = ['name', 'bio', 'work', 'school', 'username'];
+    const allowedUpdates = ['name', 'bio', 'work', 'username'];
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
 
     if (!isValidOperation) {
@@ -28,11 +29,29 @@ router.patch('/users/me', auth, async (req, res) => {
     }
 
     try {
-        updates.forEach((update) => req.user[update] = req.body[update])
+        updates.forEach(async (update) => {
+            if(update == 'school'){
+                const school = await School.findOne({where: {name: req.body.name}});
+                await req.user.setSchool(school)
+            }else{
+                req.user[update] = req.body[update]
+            }
+        })
         await req.user.save()
         res.send(req.user.serializeAuthenticatedUser())
     } catch (e) {
         res.status(400).send(e)
+    }
+});
+
+router.post('/user/school'. auth, async (req,res) => {
+    try{
+        const school = await School.findOne({where: {name: req.body.name}});
+        await req.user.setSchool(school)
+        res.send();
+    }catch(e){
+        console.log(e);
+        res.status(400).send("could not update school")
     }
 })
 
@@ -72,20 +91,26 @@ const upload = multer({
 })
 
 router.post('/user/avatar', auth, upload.single('avatar'), async (req,res) => {
-    req.user.avatarUrl = "/images/"+req.file.filename; 
-    await fs.readFile(path.join(process.cwd(), "/images/"+req.file.filename), async (err, filebuffer) =>{
-        const buffer = await sharp(filebuffer).resize({ width: 250, height: 250 }).png().toBuffer()
-        req.user.avatar = buffer
-        await req.user.save()
-    })
-    res.send()
+    try{
+        req.user.avatarUrl = "/images/"+req.file.filename; 
+        await fs.readFile(path.join(process.cwd(), "/images/"+req.file.filename), async (err, filebuffer) =>{
+            const buffer = await sharp(filebuffer).resize({ width: 250, height: 250 }).png().toBuffer()
+            req.user.avatar = buffer
+            await req.user.save()
+        })
+        res.send()
+    }catch(e){
+        console.log(e);
+        res.status(404).send('error: avatar could not be created')
+    }
 }, (error, req, res, next) => {
     res.status(400).send({ error: error.message })
 })
 
 router.get('/user/avatar', auth, async (req,res)=>{
     try {
-        const image_path = path.join(process.cwd(), req.query.path)
+        const temp_path = req.query.path ? req.query.path : req.user.avatarUrl;
+        const image_path = path.join(process.cwd(), temp_path);
         res.sendFile(image_path);
     } catch (e) {
         res.status(404).send()
@@ -106,6 +131,16 @@ router.get('/user/profile', auth, async (req,res) => {
     }catch(e){
         console.log(e);
         res.status(400).send('could not fetch user')
+    }
+})
+
+router.get('/user/school', auth, async (req,res) => {
+    try{
+        const schools = await School.findAll();
+        res.send(schools)
+    }catch(e){
+        console.log(e);
+        res.status(400).send()
     }
 })
 

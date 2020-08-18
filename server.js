@@ -44,8 +44,6 @@ api.use(function onError(err, req, res, next) {
   res.end(res.sentry + "\n");
 });
 
-models.sequelize.sync({force: false}).then(function(){
-	api.listen(port, () => {
+api.listen(port, () => {
 		console.log('Server is up on port ' + port)
-	})
 });

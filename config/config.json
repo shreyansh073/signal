@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "bitspilani",
+    "database": "comet",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "oesrlfxngxrtvc",
+    "password": "35e0a854462df36fcc41f657e53bbaf25b6ebc27c896430cb5b6001e85631f15",
+    "database": "daceaa7gtj4csk",
+    "host": "ec2-54-211-210-149.compute-1.amazonaws.com",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "postgres",
+    "password": "bitspilani",
+    "database": "comet",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+}

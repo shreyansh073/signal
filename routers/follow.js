@@ -1,4 +1,4 @@
-const User = require('../models').User;
+const User = require('../models').Users;
 const auth = require('../middleware/auth')
 const {getStreamClient} = require('../util/stream')
 const { Op } = require("sequelize");
@@ -150,11 +150,12 @@ router.get('/follow/recommend', auth, async (req,res) => {
         let list = followingList.map((item) => item.id)
         list.push(req.user.id)
         console.log(list)
-        const recommended = await User.findAll({
+        const FromSchool = await User.findAll({
             where: {
-                id: {
-                    [Op.notIn]: list
-                }
+                [Op.and]: [
+                    { id: {[Op.notIn]: list} },
+                    { school: req.user.school }
+                ]                
             },
             order: [
                 ['followerCount', 'DESC'],
@@ -162,6 +163,28 @@ router.get('/follow/recommend', auth, async (req,res) => {
             ],
             attributes: ['id','name','username','avatarUrl', 'work','school']
         })
+
+        const NotFromSchool = await User.findAll({
+            where: {
+                [Op.and]: [
+                    { id: {[Op.notIn]: list} },
+                    { [Op.not]: [{school: req.user.school }]}
+                ]                
+            },
+            order: [
+                ['followerCount', 'DESC'],
+                ['postCount', 'DESC']
+            ],
+            attributes: ['id','name','username','avatarUrl', 'work','school']
+        })
+
+        let recommended = [];
+        for(i in FromSchool){
+            recommended.push(FromSchool[i].serializeAuthenticatedUser())
+        }
+        for(i in NotFromSchool){
+            recommended.push(NotFromSchool[i].serializeAuthenticatedUser())
+        }
         res.send(recommended)
     }catch(e){
         console.log(e);

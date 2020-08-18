@@ -1,4 +1,4 @@
-const User = require('../models').User;
+const User = require('../models').Users;
 const {Op} = require('sequelize');
 const validator = require('validator');
 const bcrypt = require('bcrypt')

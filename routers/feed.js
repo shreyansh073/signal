@@ -1,5 +1,5 @@
-const Post = require('../models').Post;
-const User = require('../models').User;
+const Post = require('../models').Posts;
+const User = require('../models').Users;
 const auth = require('../middleware/auth')
 const {getStreamClient} = require('../util/stream')
 
@@ -17,7 +17,6 @@ router.get('/feed/home-feed', auth, async (req,res) =>{
         }else{
             response = await getStreamClient().feed('user', req.user.id).get({limit,offset})
         }        
-        console.log(response)
         let postIDs = response.results.map((r) => {
             return parseInt(r.foreign_id.split(':')[1]);
         });
@@ -85,6 +84,7 @@ router.get('/feed/profile-feed', auth, async (req,res) => {
         });    
         res.send(posts);
     }catch(e){
+        console.log(e)
         res.status(400).send('could not fetch posts')
     }    
 });
