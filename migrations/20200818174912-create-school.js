@@ -10,7 +10,9 @@ module.exports = {
       },
       name: {
         type: Sequelize.STRING,
-        unique: true
+        unique: true,
+        primaryKey: true,
+        allowNull: false,
       },
       logo: {
         type: Sequelize.STRING,

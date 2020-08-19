@@ -18,7 +18,7 @@ router.get('/user/me', auth, async (req,res) => {
     return res.send(req.user.serializeAuthenticatedUser())
 })
 
-router.patch('/users/me', auth, async (req, res) => {
+router.patch('/user/me', auth, async (req, res) => {
     const updates = Object.keys(req.body)
     //ensure username is unique
     const allowedUpdates = ['name', 'bio', 'work', 'username', 'SchoolId'];
@@ -31,8 +31,7 @@ router.patch('/users/me', auth, async (req, res) => {
     try {
         updates.forEach(async (update) => {
             if(update == 'SchoolId'){
-                const school = await School.findOne({where: {name: req.body.SchoolId}});
-                await req.user.setSchool(school)
+                await req.user.setSchool(req.body.SchoolId)
             }else{
                 req.user[update] = req.body[update]
             }
@@ -40,6 +39,7 @@ router.patch('/users/me', auth, async (req, res) => {
         await req.user.save()
         res.send(req.user.serializeAuthenticatedUser())
     } catch (e) {
+        console.log(e)
         res.status(400).send(e)
     }
 });
