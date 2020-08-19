@@ -1,5 +1,6 @@
 'use strict';
-
+const bcrypt = require('bcrypt')
+const pass = bcrypt.hashSync('comet', 8)
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.bulkInsert('Users', [
@@ -7,7 +8,7 @@ module.exports = {
         name: 'shreyansh',
         username: 'shreyansh',
         email: 'shreyansh@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -15,7 +16,7 @@ module.exports = {
         name: 'chandak',
         username: 'chandak',
         email: 'chandak@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -23,7 +24,7 @@ module.exports = {
         name: 'rohan',
         username: 'rohan',
         email: 'rohan@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -31,7 +32,7 @@ module.exports = {
         name: 'manchi',
         username: 'machi',
         email: 'manchi@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -39,7 +40,7 @@ module.exports = {
         name: 'ipshita',
         username: 'ipshita',
         email: 'ipshita@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -47,7 +48,7 @@ module.exports = {
         name: 'agarwal',
         username: 'agarwal',
         email: 'agarwal@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -55,7 +56,7 @@ module.exports = {
         name: 'ankit',
         username: 'ankit',
         email: 'ankit@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -63,7 +64,7 @@ module.exports = {
         name: 'gupta',
         username: 'gupta',
         email: 'gupta@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -71,7 +72,7 @@ module.exports = {
         name: 'pradyumn',
         username: 'pradyumn',
         email: 'pradyumn@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -79,7 +80,7 @@ module.exports = {
         name: 'awasthi',
         username: 'awasthi',
         email: 'awasthi@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -87,7 +88,7 @@ module.exports = {
         name: 'john',
         username: 'john',
         email: 'john@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -95,7 +96,7 @@ module.exports = {
         name: 'doe',
         username: 'doe',
         email: 'doe@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -103,7 +104,7 @@ module.exports = {
         name: 'paul',
         username: 'paul',
         email: 'paul@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -111,7 +112,7 @@ module.exports = {
         name: 'graham',
         username: 'graham',
         email: 'graham@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -119,7 +120,7 @@ module.exports = {
         name: 'kunal',
         username: 'kunal',
         email: 'kunal@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -127,7 +128,7 @@ module.exports = {
         name: 'shah',
         username: 'shah',
         email: 'shah@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -135,7 +136,7 @@ module.exports = {
         name: 'tired',
         username: 'tired',
         email: 'tired@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -143,7 +144,7 @@ module.exports = {
         name: 'bored',
         username: 'bored',
         email: 'bored@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -151,7 +152,7 @@ module.exports = {
         name: 'unicorn',
         username: 'unicorn',
         email: 'unicorn@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -159,7 +160,7 @@ module.exports = {
         name: 'decacorn',
         username: 'decacorn',
         email: 'decacorn@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -167,7 +168,7 @@ module.exports = {
         name: 'cel',
         username: 'cel',
         email: 'cel@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -175,7 +176,7 @@ module.exports = {
         name: 'bits',
         username: 'bits',
         email: 'bits@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -183,7 +184,7 @@ module.exports = {
         name: 'anonymous',
         username: 'anonymous',
         email: 'anonymous@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -191,7 +192,7 @@ module.exports = {
         name: 'sam',
         username: 'sam',
         email: 'sam@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -199,7 +200,7 @@ module.exports = {
         name: 'altman',
         username: 'altman',
         email: 'altman@example.com',
-        password: 'comet',
+        password: pass,
         createdAt: new Date(),
         updatedAt: new Date()
       },

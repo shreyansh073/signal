@@ -21,7 +21,7 @@ router.get('/user/me', auth, async (req,res) => {
 router.patch('/users/me', auth, async (req, res) => {
     const updates = Object.keys(req.body)
     //ensure username is unique
-    const allowedUpdates = ['name', 'bio', 'work', 'username'];
+    const allowedUpdates = ['name', 'bio', 'work', 'username', 'SchoolId'];
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
 
     if (!isValidOperation) {
@@ -30,8 +30,8 @@ router.patch('/users/me', auth, async (req, res) => {
 
     try {
         updates.forEach(async (update) => {
-            if(update == 'school'){
-                const school = await School.findOne({where: {name: req.body.name}});
+            if(update == 'SchoolId'){
+                const school = await School.findOne({where: {name: req.body.SchoolId}});
                 await req.user.setSchool(school)
             }else{
                 req.user[update] = req.body[update]

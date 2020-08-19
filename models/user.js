@@ -136,7 +136,7 @@ module.exports = (sequelize, DataTypes) => {
       name: user.name,
       username: user.username,
       bio: user.bio,
-      school: user.school,
+      school: user.SchoolId,
       work: user.work,
       followerCount: user.followerCount,
       followingCount: user.followingCount,

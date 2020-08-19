@@ -85,7 +85,7 @@ router.post('/posts/new', auth, async (req,res)=>{
 router.get('/posts/repinners', auth, async (req,res) => {
     try{
         const post = await Post.findOne({where: {id: req.query.id}});
-        const repinners = await post.getUsers({ attributes: ['id','username', 'name', 'avatarUrl', 'work', 'school']})
+        const repinners = await post.getUsers({ attributes: ['id','username', 'name', 'avatarUrl', 'work', 'SchoolId']})
         res.send(repinners)
     }catch(e){
         res.status(400).send('error')

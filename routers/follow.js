@@ -105,7 +105,7 @@ router.get('/follow/does-follow', auth, async (req,res) => {
 router.get('/follow/following-list', auth, async (req,res) => {
     try{
         const user = await User.findOne({where: {id: req.query.id}})
-        const followingList = await user.getDestination({attributes: ['id','name', 'username', 'avatarUrl', 'work', 'school']})
+        const followingList = await user.getDestination({attributes: ['id','name', 'username', 'avatarUrl', 'work', 'SchoolId']})
         let list = [];
         for(i in followingList){
             const temp = followingList[i].serializeAuthenticatedUser();
@@ -154,28 +154,28 @@ router.get('/follow/recommend', auth, async (req,res) => {
             where: {
                 [Op.and]: [
                     { id: {[Op.notIn]: list} },
-                    { school: req.user.school }
+                    { SchoolId: req.user.SchoolId }
                 ]                
             },
             order: [
                 ['followerCount', 'DESC'],
                 ['postCount', 'DESC']
             ],
-            attributes: ['id','name','username','avatarUrl', 'work','school']
+            attributes: ['id','name','username','avatarUrl', 'work','SchoolId']
         })
 
         const NotFromSchool = await User.findAll({
             where: {
                 [Op.and]: [
                     { id: {[Op.notIn]: list} },
-                    { [Op.not]: [{school: req.user.school }]}
+                    { [Op.not]: [{SchoolId: req.user.SchoolId }]}
                 ]                
             },
             order: [
                 ['followerCount', 'DESC'],
                 ['postCount', 'DESC']
             ],
-            attributes: ['id','name','username','avatarUrl', 'work','school']
+            attributes: ['id','name','username','avatarUrl', 'work','SchoolId']
         })
 
         let recommended = [];
