@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
 
-  User.init({
+  School.init({
     name: {
       type: DataTypes.STRING,
       unique: true

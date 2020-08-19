@@ -44,17 +44,6 @@ router.patch('/users/me', auth, async (req, res) => {
     }
 });
 
-router.post('/user/school'. auth, async (req,res) => {
-    try{
-        const school = await School.findOne({where: {name: req.body.name}});
-        await req.user.setSchool(school)
-        res.send();
-    }catch(e){
-        console.log(e);
-        res.status(400).send("could not update school")
-    }
-})
-
 router.get('/user/exists', async (req,res) => {
     if(!isValidUsername(req.query.username)){
         return res.status(400).send('invalid username')
