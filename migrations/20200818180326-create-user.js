@@ -52,7 +52,7 @@ module.exports = {
       work: {
         type: Sequelize.STRING
       },
-      school: {
+      SchoolId: {
         type: Sequelize.STRING,
         references: {
           model: "Schools",
