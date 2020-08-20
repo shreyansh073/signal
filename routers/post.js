@@ -86,7 +86,14 @@ router.get('/posts/repinners', auth, async (req,res) => {
     try{
         const post = await Post.findOne({where: {id: req.query.id}});
         const repinners = await post.getUsers({ attributes: ['id','username', 'name', 'avatarUrl', 'work', 'SchoolId']})
-        res.send(repinners)
+        
+        let list = [];
+        for(i in repinners){
+            const temp = repinners[i].serializeAuthenticatedUser();
+            const val = await req.user.hasDestination(repinners[i]);
+            list.push({...temp, doesFollow: val})
+        }
+        res.send(list)
     }catch(e){
         res.status(400).send('error')
     }

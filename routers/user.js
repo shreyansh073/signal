@@ -30,7 +30,7 @@ router.patch('/user/me', auth, async (req, res) => {
 
     try {
         updates.forEach(async (update) => {
-            if(update == 'SchoolId'){
+            if(update == 'SchoolId' && req.body.SchoolId){
                 await req.user.setSchool(req.body.SchoolId)
             }else{
                 req.user[update] = req.body[update]
