@@ -59,9 +59,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
-    avatar: {
-      type: DataTypes.BLOB('tiny')
-    },
     avatarUrl: {
       type: DataTypes.STRING
     },

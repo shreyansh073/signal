@@ -40,9 +40,6 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
-      avatar: {
-        type: Sequelize.BLOB('tiny')
-      },
       avatarUrl: {
         type: Sequelize.STRING
       },

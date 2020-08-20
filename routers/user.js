@@ -1,18 +1,77 @@
 const User = require('../models').Users;
-const Post = require('../models').Posts;
 const School = require('../models').Schools;
 
 const sharp = require('sharp');
 const multer = require('multer');
+const multerS3 = require('multer-s3')
+const AWS = require('aws-sdk')
 
 const auth = require('../middleware/auth')
 const path = require('path');
 const fs = require('fs');
-const {getStreamClient} = require('../util/stream')
 const {isValidUsername} = require('../util/util')
 
 const express = require('express')
 const router = new express.Router()
+
+const aws_accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+const aws_secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+
+const s3 = new AWS.S3({
+    accessKeyId: aws_accessKeyId,
+    secretAccessKey: aws_secretAccessKey,
+    region: "us-east-2"
+});
+
+const upload = multer({                 
+    limits: {                           
+        fileSize: 1000000              
+    },                                 
+    fileFilter(req, file, cb) {
+        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+            return cb(new Error('Please provide a jpg, jpeg or png file'));
+        }
+        cb(null, true);
+    },
+    storage: multerS3({
+        s3: s3,
+        bucket: 'cometclub',
+        acl: 'public-read',
+        metadata: function (req, file, cb) {
+            cb(null, {fieldName: file.fieldname});
+        },
+        key: function (req, file, cb) {
+            cb(null, Date.now().toString())
+        }
+    })
+})
+
+router.post('/user/avatar', auth, upload.single('avatar'), async (req,res) => {
+    try{
+        req.user.avatarUrl = req.file.location;
+        await req.user.save()
+        res.send(req.user.avatarUrl)
+    }catch(e){
+        console.log(e);
+        res.status(404).send('error: avatar could not be created')
+    }
+}, (error, req, res, next) => {
+    res.status(400).send({ error: error.message })
+})
+
+router.get('/user/avatar', auth, async (req,res)=>{
+    try {
+        res.send(req.user.avatarUrl);
+    } catch (e) {
+        res.status(404).send()
+    }
+})
+
+router.delete('/user/avatar', auth, async (req,res) => {
+    req.user.avatarUrl = null;
+    await req.user.save()
+    res.send()
+})
 
 router.get('/user/me', auth, async (req,res) => {
     return res.send(req.user.serializeAuthenticatedUser())
@@ -55,62 +114,6 @@ router.get('/user/exists', async (req,res) => {
     else{
         res.send({exists: false})
     }
-})
-
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './images')
-    },
-    filename: function (req, file, cb) {
-        cb(null, `${req.user.id}.${file.originalname.split('.').pop()}`)
-    }
-});
-const upload = multer({                 
-    limits: {                           
-        fileSize: 1000000              
-    },
-    dest: '../images/',                                 
-    fileFilter(req, file, cb) {
-        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-            return cb(new Error('Please provide a jpg, jpeg or png file'));
-        }
-        cb(null, true);
-    },
-    storage: storage
-})
-
-router.post('/user/avatar', auth, upload.single('avatar'), async (req,res) => {
-    try{
-        req.user.avatarUrl = "/images/"+req.file.filename; 
-        await fs.readFile(path.join(process.cwd(), "/images/"+req.file.filename), async (err, filebuffer) =>{
-            const buffer = await sharp(filebuffer).resize({ width: 250, height: 250 }).png().toBuffer()
-            req.user.avatar = buffer
-            await req.user.save()
-        })
-        res.send()
-    }catch(e){
-        console.log(e);
-        res.status(404).send('error: avatar could not be created')
-    }
-}, (error, req, res, next) => {
-    res.status(400).send({ error: error.message })
-})
-
-router.get('/user/avatar', auth, async (req,res)=>{
-    try {
-        const temp_path = req.query.path ? req.query.path : req.user.avatarUrl;
-        const image_path = path.join(process.cwd(), temp_path);
-        res.sendFile(image_path);
-    } catch (e) {
-        res.status(404).send()
-    }
-})
-
-router.delete('/user/avatar', auth, async (req,res) => {
-    req.user.avatar = null;
-    req.user.avatarUrl = null;
-    await req.user.save()
-    res.send()
 })
 
 router.get('/user/profile', auth, async (req,res) => {
