@@ -1,0 +1,12 @@
+sudo: required
+services:
+    - docker
+before_install:
+    - echo "skipping build for test"
+script:
+    - echo "skipping tests"
+
+after_success:
+    - docker build -t shreyansh073/comet-prod .
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+    - docker push shreyansh073/comet-prod
