@@ -15,9 +15,9 @@
   },
   "production": {
     "username": "postgres",
-    "password": "bitspilani",
+    "password": "cometclub!123",
     "database": "comet",
-    "host": "127.0.0.1",
+    "host": "comet-prod.cdc3wfvarnom.us-west-1.rds.amazonaws.com",
     "dialect": "postgres"
   }
 }

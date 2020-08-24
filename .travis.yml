@@ -5,8 +5,19 @@ before_install:
     - echo "skipping build for test"
 script:
     - echo "skipping tests"
-
 after_success:
     - docker build -t shreyansh073/comet-prod .
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
     - docker push shreyansh073/comet-prod
+deploy:
+    provider: elasticbeanstalk
+  region: us-west-1
+  app: comet-backend
+  env: CometBackend-env
+  bucket_name: elasticbeanstalk-us-west-1-044532981927
+  bucket_path: comet-prod-bucket-path
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key:
+    secure: $AWS_SECRET_KEY
