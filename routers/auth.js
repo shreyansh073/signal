@@ -57,6 +57,9 @@ router.post('/auth/signup', async (req,res) => {
         data.OTP = Math.round(Math.random() * (max - min) + min);
         data.OTPCreatedAt = Date.now();
         const user = await User.create(data);
+
+        const sourceFeed = getStreamClient().feed('timeline', user.id);
+        await sourceFeed.follow('user', user.id);
         
         res.send(user.serializeAuthenticatedUser())
 
