@@ -23,42 +23,6 @@ module.exports = {
         updatedAt: new Date()
       },
       {
-        name: 'rohan',
-        username: 'rohan',
-        email: 'rohan@example.com',
-        password: pass,
-        isVerified: true,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        name: 'manchi',
-        username: 'machi',
-        email: 'manchi@example.com',
-        password: pass,
-        isVerified: true,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        name: 'ipshita',
-        username: 'ipshita',
-        email: 'ipshita@example.com',
-        password: pass,
-        isVerified: true,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        name: 'agarwal',
-        username: 'agarwal',
-        email: 'agarwal@example.com',
-        password: pass,
-        isVerified: true,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
         name: 'ankit',
         username: 'ankit',
         email: 'ankit@example.com',
