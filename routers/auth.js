@@ -77,7 +77,7 @@ router.post('/auth/login', async (req,res) => {
 
     let user;
     if(validator.isEmail(data.input)){
-        user = await User.findOne({where: {email: data.input}})
+        user = await User.findOne({where: {email: data.input.toLowerCase()}})
     }
     else if(isValidUsername(data.input)){
         user = await User.findOne({where: {username: data.input}})
