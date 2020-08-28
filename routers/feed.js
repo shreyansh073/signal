@@ -13,10 +13,10 @@ router.get('/feed/home-feed', auth, async (req,res) =>{
     let response;
     try{
         if(last_activity_id){
-            response = await getStreamClient().feed('user', req.user.id).get({limit, id_gt: last_activity_id})
+            response = await getStreamClient().feed('timeline', req.user.id).get({limit, id_gt: last_activity_id})
         }else{
-            response = await getStreamClient().feed('user', req.user.id).get({limit,offset})
-        }        
+            response = await getStreamClient().feed('timeline', req.user.id).get({limit,offset})
+        }   
         let postIDs = response.results.map((r) => {
             return parseInt(r.foreign_id.split(':')[1]);
         });
