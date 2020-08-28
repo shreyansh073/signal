@@ -107,7 +107,7 @@ router.post('/auth/forgot-password', async (req,res) => {
     const user = await User.findOne({
         where: {
             [Op.or]: [
-                { email: req.body.input }, 
+                { email: req.body.input.toLowerCase() }, 
                 { username: req.body.input }
             ]
         }
@@ -135,7 +135,7 @@ router.post('/auth/reset-password',async (req,res) => {
         user = await User.findOne({
             where: {
                 [Op.or]: [
-                    { email: req.body.input }, 
+                    { email: req.body.input.toLowerCase() }, 
                     { username: req.body.input }
                 ]
             }
@@ -155,7 +155,7 @@ router.post('/auth/verify-otp', async (req,res) => {
     const user = await User.findOne({
         where: {
             [Op.or]: [
-                { email: req.body.input }, 
+                { email: req.body.input.toLowerCase() }, 
                 { username: req.body.input }
             ]
         }
@@ -179,7 +179,7 @@ router.post('/auth/verify-email', async (req,res) => {
     const user = await User.findOne({
         where: {
             [Op.or]: [
-                { email: req.body.input }, 
+                { email: req.body.input.toLowerCase() }, 
                 { username: req.body.input }
             ]
         }
