@@ -116,10 +116,12 @@ module.exports = (sequelize, DataTypes) => {
 
   User.prototype.isValidOTP = async function(otp){
     const user = this;
-    if((Date.now().valueOf() - user.OTPCreatedAt.valueOf())/1000 < 60 && user.OTP === parseInt(otp)){
+    if(((Date.now().valueOf() - user.OTPCreatedAt.valueOf())/1000 < 600) && user.OTP === parseInt(otp)){
       user.isVerified = true;
-      user.save();
+      await user.save();
+      return true;
     }
+    return false;
   }
 
   User.prototype.serializeAuthenticatedUser = function(){
@@ -139,6 +141,7 @@ module.exports = (sequelize, DataTypes) => {
       followingCount: user.followingCount,
       postCount: user.postCount,
       avatarUrl: user.avatarUrl,
+      isVerified: user.isVerified,
       isOnboardingComplete: user.isOnboardingComplete,
       createdAt: user.createdAt,
       streamToken: streamToken,

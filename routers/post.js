@@ -151,6 +151,11 @@ router.delete('/posts',auth, async (req,res) => {
         if(post){
             await getStreamClient().feed('user', post.ownerId).removeActivity({foreignId: `post:${post.id}`})
             await post.destroy()
+            let count = req.user.postCount;
+            count = count -1;
+            if(count<0) count = 0;
+            req.user.postCount = count;
+            req.user.save()
             res.send()
         }
         else{

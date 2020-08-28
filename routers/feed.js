@@ -32,7 +32,7 @@ router.get('/feed/home-feed', auth, async (req,res) =>{
                 {
                     model: User,
                     as: 'repinnedFrom',
-                    attributes: ['username'] 
+                    attributes: ['username', 'id'] 
                 }
             ]
         });

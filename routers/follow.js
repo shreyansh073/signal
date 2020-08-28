@@ -142,6 +142,11 @@ router.get('/follow/follower-list', auth, async (req,res) => {
     }
 })
 
+router.get('/follow/test', auth, async (req,res) => {
+    const list = await User.findAll({where: {SchoolId: req.user.SchoolId}, attributes: ['id','name','username','SchoolId']})
+    console.log(list)
+    res.send(list)
+})
 
 
 router.get('/follow/recommend', auth, async (req,res) => {
@@ -149,42 +154,25 @@ router.get('/follow/recommend', auth, async (req,res) => {
         const followingList = await req.user.getDestination({attributes: ['id']})
         let list = followingList.map((item) => item.id)
         list.push(req.user.id)
-        console.log(list)
-        const FromSchool = await User.findAll({
-            where: {
-                [Op.and]: [
-                    { id: {[Op.notIn]: list} },
-                    { SchoolId: req.user.SchoolId }
-                ]                
-            },
+        const users = await User.findAll({
+            where: {id: {[Op.notIn]: list}},
             order: [
                 ['followerCount', 'DESC'],
                 ['postCount', 'DESC']
             ],
             attributes: ['id','name','username','avatarUrl', 'work','SchoolId']
         })
-
-        const NotFromSchool = await User.findAll({
-            where: {
-                [Op.and]: [
-                    { id: {[Op.notIn]: list} },
-                    { [Op.not]: [{SchoolId: req.user.SchoolId }]}
-                ]                
-            },
-            order: [
-                ['followerCount', 'DESC'],
-                ['postCount', 'DESC']
-            ],
-            attributes: ['id','name','username','avatarUrl', 'work','SchoolId']
-        })
-
-        let recommended = [];
-        for(i in FromSchool){
-            recommended.push(FromSchool[i].serializeAuthenticatedUser())
+        let fromSchool = [];
+        let notFromSchool = [];
+        for(i in users){
+            if(users[i].SchoolId && users[i].SchoolId === req.user.SchoolId){
+                console.log(users[i])
+                fromSchool.push(users[i].serializeAuthenticatedUser())
+            }else{
+                notFromSchool.push(users[i].serializeAuthenticatedUser())
+            }
         }
-        for(i in NotFromSchool){
-            recommended.push(NotFromSchool[i].serializeAuthenticatedUser())
-        }
+        const recommended = fromSchool.concat(notFromSchool)
         res.send(recommended)
     }catch(e){
         console.log(e);

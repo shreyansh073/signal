@@ -96,7 +96,10 @@ router.post('/auth/login', async (req,res) => {
 			error: 'invalid password',
 		});
     }
-    res.send(user.serializeAuthenticatedUser())
+    res.send(user.serializeAuthenticatedUser());
+    if(!user.isVerified){
+        SendEmailVerificationEmail({email: user.email, otp: user.OTP});
+    }
 })
 
 router.post('/auth/forgot-password', async (req,res) => {
@@ -158,7 +161,8 @@ router.post('/auth/verify-otp', async (req,res) => {
     });
     
     if(user){
-        if(user.isValidOTP(req.body.otp)){        
+        const val = await user.isValidOTP(req.body.otp)
+        if(val){     
             res.send({isVerified: true})
         }
         else{
