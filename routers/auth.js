@@ -10,7 +10,8 @@ const router = new express.Router()
 const auth = require('../middleware/auth')
 
 router.post('/auth/signup', async (req,res) => {
-    const data = req.body || {};
+    let data = req.body || {};
+    data.email = data.email.toLowerCase()
 
     if (!(data.email && data.password && data.name && data.username)) {
 		return res.status(400).json({ error: 'Missing required fields.' });

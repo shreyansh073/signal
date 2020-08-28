@@ -9,6 +9,7 @@ module.exports = {
         username: 'shreyansh',
         email: 'shreyansh@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -17,6 +18,7 @@ module.exports = {
         username: 'chandak',
         email: 'chandak@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -25,6 +27,7 @@ module.exports = {
         username: 'rohan',
         email: 'rohan@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -33,6 +36,7 @@ module.exports = {
         username: 'machi',
         email: 'manchi@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -41,6 +45,7 @@ module.exports = {
         username: 'ipshita',
         email: 'ipshita@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -49,6 +54,7 @@ module.exports = {
         username: 'agarwal',
         email: 'agarwal@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -57,6 +63,7 @@ module.exports = {
         username: 'ankit',
         email: 'ankit@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -73,6 +80,7 @@ module.exports = {
         username: 'pradyumn',
         email: 'pradyumn@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -81,6 +89,7 @@ module.exports = {
         username: 'awasthi',
         email: 'awasthi@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -89,6 +98,7 @@ module.exports = {
         username: 'john',
         email: 'john@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -97,6 +107,7 @@ module.exports = {
         username: 'doe',
         email: 'doe@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -105,6 +116,7 @@ module.exports = {
         username: 'paul',
         email: 'paul@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -113,6 +125,7 @@ module.exports = {
         username: 'graham',
         email: 'graham@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -121,6 +134,7 @@ module.exports = {
         username: 'kunal',
         email: 'kunal@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -129,6 +143,7 @@ module.exports = {
         username: 'shah',
         email: 'shah@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -137,6 +152,7 @@ module.exports = {
         username: 'tired',
         email: 'tired@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -145,6 +161,7 @@ module.exports = {
         username: 'bored',
         email: 'bored@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -153,6 +170,7 @@ module.exports = {
         username: 'unicorn',
         email: 'unicorn@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -161,6 +179,7 @@ module.exports = {
         username: 'decacorn',
         email: 'decacorn@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -169,6 +188,7 @@ module.exports = {
         username: 'cel',
         email: 'cel@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -177,6 +197,7 @@ module.exports = {
         username: 'bits',
         email: 'bits@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -185,6 +206,7 @@ module.exports = {
         username: 'anonymous',
         email: 'anonymous@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -193,6 +215,7 @@ module.exports = {
         username: 'sam',
         email: 'sam@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
@@ -201,6 +224,7 @@ module.exports = {
         username: 'altman',
         email: 'altman@example.com',
         password: pass,
+        isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date()
       },
