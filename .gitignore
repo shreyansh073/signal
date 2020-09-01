@@ -1,6 +1,6 @@
 node_modules/
 .envsendgrid.env
-#.env
+.env
 images/
 .elasticbeanstalk/
 # Elastic Beanstalk Files
