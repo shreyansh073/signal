@@ -10,6 +10,7 @@ const auth = require('../middleware/auth')
 const path = require('path');
 const fs = require('fs');
 const {isValidUsername} = require('../util/util')
+const index = require('../util/algolia')
 
 const express = require('express')
 const router = new express.Router()
@@ -50,6 +51,12 @@ router.post('/user/avatar', auth, upload.single('avatar'), async (req,res) => {
     try{
         req.user.avatarUrl = req.file.location;
         await req.user.save()
+
+        // add to algolia
+        await index.partialUpdateObject({
+            objectID: req.user.id,
+            avatarUrl: req.user.avatarUrl
+        })
         res.send(req.user.avatarUrl)
     }catch(e){
         console.log(e);
@@ -70,6 +77,11 @@ router.get('/user/avatar', auth, async (req,res)=>{
 router.delete('/user/avatar', auth, async (req,res) => {
     req.user.avatarUrl = null;
     await req.user.save()
+    // add to algolia
+    await index.partialUpdateObject({
+        objectID: req.user.id,
+        avatarUrl: req.user.avatarUrl
+    })
     res.send()
 })
 
@@ -96,6 +108,16 @@ router.patch('/user/me', auth, async (req, res) => {
             }
         })
         await req.user.save()
+        // add to algolia
+        await index.saveObject({
+            objectID: req.user.id,
+            name: req.user.name,
+            username: req.user.username,
+            SchoolId: req.user.SchoolId,
+            work: req.user.work,
+            avatarUrl: req.user.avatarUrl
+        })
+
         res.send(req.user.serializeAuthenticatedUser())
     } catch (e) {
         console.log(e)
@@ -134,6 +156,16 @@ router.get('/user/school', auth, async (req,res) => {
         console.log(e);
         res.status(400).send()
     }
+})
+
+router.post('/user/expo', auth, async (req,res) => {
+    req.user.expoToken = req.body.expoToken;
+    await req.user.save()
+    res.send()
+})
+
+router.get('/user/expo',auth, async (req,res) => {
+    res.send(req.user.expoToken)
 })
 
 module.exports = router

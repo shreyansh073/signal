@@ -73,6 +73,9 @@ module.exports = {
         type: Sequelize.INTEGER,
         defaultValue: 0
       },
+      expoToken: {
+        type: Sequelize.STRING
+      },
       OTP: {
         type: Sequelize.INTEGER,
       },

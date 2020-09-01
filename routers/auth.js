@@ -8,6 +8,7 @@ const {SendWelcomeEmail, SendEmailVerificationEmail, SendPasswordResetEmail} = r
 const express = require('express')
 const router = new express.Router()
 const auth = require('../middleware/auth')
+const index = require('../util/algolia')
 
 router.post('/auth/signup', async (req,res) => {
     let data = req.body || {};
@@ -60,13 +61,24 @@ router.post('/auth/signup', async (req,res) => {
 
         const sourceFeed = getStreamClient().feed('timeline', user.id);
         await sourceFeed.follow('user', user.id);
-        
+
+        // add to algolia
+        await index.saveObject({
+            objectID: user.id,
+            name: user.name,
+            username: user.username,
+            SchoolId: user.SchoolId,
+            work: user.work,
+            avatarUrl: user.avatarUrl
+        })
+    
         res.send(user.serializeAuthenticatedUser())
 
         // here if the following calls throw error then a 400 response will be sent again
         SendEmailVerificationEmail({email: user.email, otp: user.OTP});
     }
     catch(e){
+        console.log(e)
         res.status(400).send('cannot create user')
     }        
 })
