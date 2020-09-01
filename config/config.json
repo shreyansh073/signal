@@ -6,18 +6,18 @@
     "host": "127.0.0.1",
     "dialect": "postgres"
   },
-  "test": {
+  "production": {
     "username": "oesrlfxngxrtvc",
     "password": "35e0a854462df36fcc41f657e53bbaf25b6ebc27c896430cb5b6001e85631f15",
     "database": "daceaa7gtj4csk",
     "host": "ec2-54-211-210-149.compute-1.amazonaws.com",
     "dialect": "postgres"
   },
-  "production": {
-    "username": "postgres",
-    "password": "cometclub!123",
-    "database": "comet",
-    "host": "comet-prod.cdc3wfvarnom.us-west-1.rds.amazonaws.com",
+  "test": {
+    "username": "qgggwtkuffbgko",
+    "password": "7ca21dc1f1afe7466e6509780cb9bb881dfbb78b2ca383fbd5a24e5dd4d1c313",
+    "database": "dfahkbqo62q60c",
+    "host": "ec2-107-20-15-85.compute-1.amazonaws.com",
     "dialect": "postgres"
   }
 }
