@@ -4,6 +4,7 @@ const {getStreamClient} = require('../util/stream')
 const { Op } = require("sequelize");
 const express = require('express')
 const router = new express.Router()
+const {pushNotification} = require('../util/expo')
 
 router.post('/follow', auth, async (req,res)=>{
     if(req.user.id === req.body.id){
@@ -27,6 +28,9 @@ router.post('/follow', auth, async (req,res)=>{
 
         dest.followerCount = dest.followerCount + 1;
         await dest.save();
+
+        // send push notification
+        await pushNotification(dest.expoToken,`${req.user.username} follows you!`, "For more interesting content, follow them back!",{avatarUrl: req.user.avatarUrl})
 
         res.send()
     }catch(e){

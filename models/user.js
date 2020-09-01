@@ -84,7 +84,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 0
     },
     expoToken: {
-      type: Sequelize.STRING
+      type: DataTypes.STRING
     },
     OTP: {
       type: DataTypes.INTEGER,

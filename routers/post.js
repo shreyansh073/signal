@@ -3,6 +3,7 @@ const User = require('../models').Users;
 const ogs = require('open-graph-scraper');
 const auth = require('../middleware/auth')
 const {getStreamClient} = require('../util/stream')
+const {pushNotification} = require('../util/expo')
 
 const express = require('express')
 const router = new express.Router()
@@ -74,6 +75,12 @@ router.post('/posts/new', auth, async (req,res)=>{
             foreign_id: `post:${post.id}`,
             time: post.createdAt
         });
+
+        // send push notification for repins
+        if(req.body.repinnedFromId){
+            const source = await User.findOne({where: {id: req.body.repinnedFromId}})
+            await pushNotification(source.expoToken,`${req.user.username} repinned your post`, "People love what you are reading!",{avatarUrl: req.user.avatarUrl})
+        }
 
         res.send(post)
     }catch(err){

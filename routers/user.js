@@ -11,6 +11,7 @@ const path = require('path');
 const fs = require('fs');
 const {isValidUsername} = require('../util/util')
 const index = require('../util/algolia')
+const { Expo } = require('expo-server-sdk');
 
 const express = require('express')
 const router = new express.Router()
@@ -159,6 +160,11 @@ router.get('/user/school', auth, async (req,res) => {
 })
 
 router.post('/user/expo', auth, async (req,res) => {
+    if (!Expo.isExpoPushToken(expoToken)) {
+        console.error(`Push token ${pushToken} is not a valid Expo push token`);
+        res.status(400).send("Invalid expo token")
+    }
+
     req.user.expoToken = req.body.expoToken;
     await req.user.save()
     res.send()
