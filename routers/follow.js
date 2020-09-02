@@ -136,7 +136,7 @@ router.get('/follow/follower-list', auth, async (req,res) => {
         const users = await User.findAll({where: {id: id_list}})
         let list = [];
         for(i in users){
-            if(users[i].id === req.query.id){
+            if(users[i].id === parseInt(req.query.id)){
                 continue;
             }
             const temp = users[i].serializeAuthenticatedUser();
