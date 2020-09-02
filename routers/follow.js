@@ -30,7 +30,7 @@ router.post('/follow', auth, async (req,res)=>{
         await dest.save();
 
         // send push notification
-        await pushNotification(dest.expoToken,`${req.user.username} follows you!`, "For more interesting content, follow them back!",{avatarUrl: req.user.avatarUrl})
+        pushNotification(dest.expoToken,`${req.user.username} follows you!`, "For more interesting content, follow them back!",{avatarUrl: req.user.avatarUrl})
 
         res.send()
     }catch(e){
@@ -55,6 +55,7 @@ router.post('/follow/many', auth, async (req,res)=>{
                 'target': `user:${dest.id}`,
                 'activity_copy_limit': 20
             })
+            pushNotification(dest.expoToken,`${req.user.username} follows you!`, "For more interesting content, follow them back!",{avatarUrl: req.user.avatarUrl})
         })
 
         const client = getStreamClient();
@@ -135,6 +136,9 @@ router.get('/follow/follower-list', auth, async (req,res) => {
         const users = await User.findAll({where: {id: id_list}})
         let list = [];
         for(i in users){
+            if(users[i].id === req.query.id){
+                continue;
+            }
             const temp = users[i].serializeAuthenticatedUser();
             const val = await req.user.hasDestination(users[i]);
             list.push({...temp, doesFollow: val})
