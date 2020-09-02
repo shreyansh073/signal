@@ -3,11 +3,16 @@ const fs = require('fs')
 const sendgrid = require('@sendgrid/mail')
 
 async function SendWelcomeEmail(data) {
-	const msg = ejs.render(fs.readFileSync(__dirname + '/templates/welcome.ejs', 'utf8'));
+	const msg = ejs.render(
+		fs.readFileSync(__dirname + '/templates/welcome.ejs', 'utf8'),
+		{
+			username: data.username,
+		}
+		);
 
 	const obj = {
 		to: data.email,
-		from: 'shrey.cha@gmail.com',
+		from: process.env.SENDGRID_EMAIL,
 		subject: 'Welcome to Comet!',
 		html: msg,
 	};
@@ -21,13 +26,14 @@ async function SendPasswordResetEmail(data) {
 		fs.readFileSync(__dirname + '/templates/reset.ejs', 'utf8'),
 		{
 			otp: data.otp,
+			username: data.username
 		},
 	);
 
 	const obj = {
 		to: data.email,
-		from: 'shrey.cha@gmail.com',
-		subject: 'Forgot Password',
+		from: process.env.SENDGRID_EMAIL,
+		subject: 'Forgot Password | Comet',
 		html: msg,
 	};
 	return await SendEmail(obj);
@@ -38,13 +44,14 @@ async function SendEmailVerificationEmail(data) {
 		fs.readFileSync(__dirname + '/templates/verifyEmail.ejs', 'utf8'),
 		{
 			otp: data.otp,
+			username: data.username
 		},
 	);
 
 	const obj = {
 		to: data.email,
-		from: 'shrey.cha@gmail.com',
-		subject: 'Verify Email',
+		from: process.env.SENDGRID_EMAIL,
+		subject: 'Verify Email | Comet',
 		html: msg,
 	};
 	return await SendEmail(obj);

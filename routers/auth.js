@@ -79,7 +79,7 @@ router.post('/auth/signup', async (req,res) => {
         res.send(user.serializeAuthenticatedUser())
 
         // here if the following calls throw error then a 400 response will be sent again
-        SendEmailVerificationEmail({email: user.email, otp: user.OTP});
+        SendEmailVerificationEmail({email: user.email, otp: user.OTP, name: user.username});
     }
     catch(e){
         console.log(e)
@@ -121,7 +121,7 @@ router.post('/auth/login', async (req,res) => {
 
     res.send(user.serializeAuthenticatedUser());
     if(!user.isVerified){
-        SendEmailVerificationEmail({email: user.email, otp: user.OTP});
+        SendEmailVerificationEmail({email: user.email, otp: user.OTP, username: user.username});
     }
 })
 
@@ -136,7 +136,7 @@ router.post('/auth/forgot-password', async (req,res) => {
 	});
     if(user){
         await user.setOTP();
-        await SendPasswordResetEmail({email: user.email, otp: user.OTP});
+        await SendPasswordResetEmail({email: user.email, otp: user.OTP, username: user.username});
         res.send('password reset email sent');
     }
     else{
@@ -208,7 +208,7 @@ router.post('/auth/verify-email', async (req,res) => {
     });
     if(user){
         await user.setOTP();
-        await SendEmailVerificationEmail({email: user.email, otp: user.OTP});
+        await SendEmailVerificationEmail({email: user.email, otp: user.OTP, username: user.username});
     }
     else{
         res.status(409).send('invalid email or username');
@@ -219,6 +219,6 @@ router.post('/auth/verify-email', async (req,res) => {
 
 router.post('/auth/welcome', auth, (req,res) => {
     const user = req.user;
-    SendWelcomeEmail({email: user.email, name: user.OTP});
+    SendWelcomeEmail({email: user.email, name: user.OTP, username: user.username});
 })
 module.exports = router
