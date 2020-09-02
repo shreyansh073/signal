@@ -5,13 +5,14 @@ async function pushNotification(expoToken,title,body,data){
     let messages = [];
 
     if (!Expo.isExpoPushToken(expoToken)) {
-        console.error(`Push token ${pushToken} is not a valid Expo push token`);
+        console.error(`Push token ${expoToken} is not a valid Expo push token`);
         return;
     }
 
     messages.push({
         to: expoToken,
         sound: 'default',
+        title: title,
         body: body,
         data: { withSome: data },
     })

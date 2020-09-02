@@ -160,8 +160,8 @@ router.get('/user/school', auth, async (req,res) => {
 })
 
 router.post('/user/expo', auth, async (req,res) => {
-    if (!Expo.isExpoPushToken(expoToken)) {
-        console.error(`Push token ${pushToken} is not a valid Expo push token`);
+    if (!Expo.isExpoPushToken(req.body.expoToken)) {
+        console.error(`Push token ${req.body.expoToken} is not a valid Expo push token`);
         res.status(400).send("Invalid expo token")
     }
 
