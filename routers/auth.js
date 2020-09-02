@@ -2,6 +2,8 @@ const User = require('../models').Users;
 const {Op} = require('sequelize');
 const validator = require('validator');
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+
 const {getStreamClient} = require('../util/stream')
 const {isValidUsername, isValidPassword} = require('../util/util')
 const {SendWelcomeEmail, SendEmailVerificationEmail, SendPasswordResetEmail} = require('../util/email/send');
@@ -58,6 +60,8 @@ router.post('/auth/signup', async (req,res) => {
         data.OTP = Math.round(Math.random() * (max - min) + min);
         data.OTPCreatedAt = Date.now();
         const user = await User.create(data);
+        user.token = jwt.sign({email: user.email, id: user.id}, process.env.JWT_SECRET);
+        await user.save()
 
         const sourceFeed = getStreamClient().feed('timeline', user.id);
         await sourceFeed.follow('user', user.id);
@@ -112,6 +116,9 @@ router.post('/auth/login', async (req,res) => {
 			error: 'invalid password',
 		});
     }
+    user.token = jwt.sign({email: user.email, id: user.id}, process.env.JWT_SECRET);
+    await user.save()
+
     res.send(user.serializeAuthenticatedUser());
     if(!user.isVerified){
         SendEmailVerificationEmail({email: user.email, otp: user.OTP});

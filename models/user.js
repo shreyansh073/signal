@@ -2,7 +2,6 @@
 const bcrypt = require('bcrypt')
 const {SendEmailVerificationEmail} = require('../util/email/send');
 const {getStreamClient} = require('../util/stream')
-const jwt = require('jsonwebtoken')
 
 const {
   Model
@@ -86,6 +85,9 @@ module.exports = (sequelize, DataTypes) => {
     expoToken: {
       type: DataTypes.STRING
     },
+    token: {
+      type: DataTypes.STRING
+    },
     OTP: {
       type: DataTypes.INTEGER,
     },
@@ -148,7 +150,7 @@ module.exports = (sequelize, DataTypes) => {
       isOnboardingComplete: user.isOnboardingComplete,
       createdAt: user.createdAt,
       streamToken: streamToken,
-      token: jwt.sign({email: user.email, id: user.id}, process.env.JWT_SECRET)
+      token: user.token
     }
     return serialized;
   }
