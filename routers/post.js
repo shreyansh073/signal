@@ -1,6 +1,5 @@
 const Post = require('../models').Posts;
 const User = require('../models').Users;
-const ogs = require('open-graph-scraper');
 const auth = require('../middleware/auth')
 const {getStreamClient} = require('../util/stream')
 const {pushNotification} = require('../util/expo')
@@ -8,47 +7,38 @@ const {pushNotification} = require('../util/expo')
 const express = require('express')
 const router = new express.Router()
 
-router.post('/posts/new', auth, async (req,res)=>{
-    // try{
-    //     const ogtemp = await ogs({options });
-    //     og = ogtemp.result;
-    // }catch(e){
-    //     og = null;
-    // }
-    
-    try{
-        let og = await ogs({
-            url: req.body.url, 
-            retry: 5, 
-            followRedirect: true, 
-            maxRedirects: 20,
-            timeout: 10000
-        });
-        og = og.result;
-        
+router.post('/posts/new', auth, async (req,res)=>{    
+    try{        
         if(req.body.repinnedFromId && req.body.repinnedFromPostId){
             const repinnedFromPost = await Post.findOne({where: {id: req.body.repinnedFromPostId}});            repinnedFromPost.repinCount = repinnedFromPost.repinCount + 1;
             await repinnedFromPost.addUser(req.user)
             await repinnedFromPost.save()
         }
-        let ogImageUrl,ogSiteName,ogTitle,ogType,ogDescription;
-        if(og){
-            if(og.ogImage){
-                ogImageUrl = og.ogImage[0] ? og.ogImage[0].url : og.ogImage.url;
-            }else{
-                ogImageUrl = null;
-            }
-            ogSiteName = og.ogSiteName ? og.ogSiteName : null;
-            ogTitle = og.ogTitle ? og.ogTitle : null;
-            ogType = og.ogType ? og.ogType : null;
-            ogDescription = og.ogDescription ? og.ogDescription : null;            
-        }else{
-            ogImageUrl = null;
-            ogType = null;
-            ogTitle = null;
-            ogDescription = null;
-            ogSiteName = null;
+        let ogImageUrl=null,ogSiteName=null,ogTitle=null,ogType=null,ogDescription=null;
+        if( req.body.ogImageUrl && 
+            req.body.ogSiteName && 
+            req.body.ogTitle && 
+            req.body.ogType &&
+            req.body.ogDescription
+        ){
+            ogImageUrl = req.body.ogImageUrl;
+            ogSiteName = req.body.ogSiteName;
+            ogTitle = req.body.ogTitle;
+            ogType = req.body.ogType;
+            ogDescription = req.body.ogDescription;
         }
+        else{
+            console.log("repeating scrape operation")
+            const og = await getStreamClient().og(req.body.url);
+            if(og){
+                ogImageUrl = og.images[0] ? og.images[0].image : null;
+                ogSiteName = og.site_name ? og.site_name : null;
+                ogTitle = og.title ? og.title : null;
+                ogType = og.type ? og.type : null;
+                ogDescription = og.description ? og.description : null;            
+            }
+        }
+
         const post = await Post.create({
             //assuming in case of repin, 
             //the repin post id will be sent from client
@@ -79,7 +69,7 @@ router.post('/posts/new', auth, async (req,res)=>{
         // send push notification for repins
         if(req.body.repinnedFromId){
             const source = await User.findOne({where: {id: req.body.repinnedFromId}})
-            await pushNotification(source.expoToken,`${req.user.username} repinned your post`, "People love what you are reading!",{avatarUrl: req.user.avatarUrl})
+            await pushNotification(source.expoToken,`You are sharing great stuff!`, "${req.user.username} just cometed your post. Check'em out now!",{avatarUrl: req.user.avatarUrl})
         }
 
         res.send(post)
@@ -109,17 +99,18 @@ router.get('/posts/repinners', auth, async (req,res) => {
 
 router.get('/posts/preview', auth, async (req,res) => {
     try{
-        const og = await ogs({
-            url: req.query.url, 
-            retry: 5, 
-            followRedirect: true, 
-            maxRedirects: 20,
-            timeout: 10000
-        });
-        res.send({
-            status: !og.error,
-            og: og.result
-        });
+        const og = await getStreamClient().og(req.query.url)
+        if(og){
+            res.send({
+                ogSiteName: og.site_name,
+                ogTitle: og.title,
+                ogType: og.type,
+                ogDescription: og.description,
+                ogImageUrl: og.images[0] ? og.images[0].image : null,
+                url: og.url
+            });
+        }
+        else    throw new Error("can't scrape");
     }catch(e){
         res.status(400).send('Could not fetch preview');
     }

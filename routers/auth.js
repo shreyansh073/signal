@@ -11,6 +11,7 @@ const express = require('express')
 const router = new express.Router()
 const auth = require('../middleware/auth')
 const index = require('../util/algolia')
+const {pushNotification} = require('../util/expo')
 
 router.post('/auth/signup', async (req,res) => {
     let data = req.body || {};
@@ -66,6 +67,30 @@ router.post('/auth/signup', async (req,res) => {
         const sourceFeed = getStreamClient().feed('timeline', user.id);
         await sourceFeed.follow('user', user.id);
 
+        //auto follow comet curators
+        if(user.username !== "comet_curators"){
+            const comet_curators = await User.findOne({where: {username:"comet_curators"}});
+            const comet_curators_feed = getStreamClient().feed('timeline', comet_curators.id)
+
+            await comet_curators_feed.follow('user', user.id)
+            await sourceFeed.follow('user', comet_curators.id)
+
+            await user.addDestination(comet_curators)
+            await comet_curators.addDestination(user)
+
+            user.followingCount = user.followingCount + 1;
+            user.followerCount = user.followerCount + 1;
+            await user.save()
+
+            comet_curators.followingCount = comet_curators.followingCount + 1;
+            comet_curators.followerCount = comet_curators.followerCount + 1;
+            await comet_curators.save()
+
+            // send push notification
+            pushNotification(user.expoToken,`Woot! ${comet_curators.username} started following you!`, "Check'em out now",{avatarUrl: comet_curators.avatarUrl})
+
+        }
+        
         // add to algolia
         await index.saveObject({
             objectID: user.id,
@@ -220,5 +245,9 @@ router.post('/auth/verify-email', async (req,res) => {
 router.post('/auth/welcome', auth, (req,res) => {
     const user = req.user;
     SendWelcomeEmail({email: user.email, name: user.OTP, username: user.username});
+})
+
+router.get('/status', (req,res) => {
+    res.send({status: true})
 })
 module.exports = router

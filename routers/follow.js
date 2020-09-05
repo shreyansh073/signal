@@ -30,7 +30,7 @@ router.post('/follow', auth, async (req,res)=>{
         await dest.save();
 
         // send push notification
-        pushNotification(dest.expoToken,`${req.user.username} follows you!`, "For more interesting content, follow them back!",{avatarUrl: req.user.avatarUrl})
+        pushNotification(dest.expoToken,`Woot! ${req.user.username} started following you!`, "Check'em out now",{avatarUrl: req.user.avatarUrl})
 
         res.send()
     }catch(e){
