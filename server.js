@@ -3,7 +3,10 @@ require('dotenv').config()
 const express = require('express');
 const api = express();
 const Sentry = require('@sentry/node');
-Sentry.init({ dsn: 'https://900c83d75d5e4e1a8c34a7f253b7b68e@o433402.ingest.sentry.io/5388403' });
+Sentry.init({ 
+  dsn: 'https://900c83d75d5e4e1a8c34a7f253b7b68e@o433402.ingest.sentry.io/5388403',
+  environment: process.env.NODE_ENV 
+});
 api.use(Sentry.Handlers.requestHandler());
 
 const jwt = require('express-jwt')

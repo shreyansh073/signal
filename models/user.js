@@ -114,6 +114,7 @@ module.exports = (sequelize, DataTypes) => {
       const min = parseInt(process.env.MINOTP)
       const max = parseInt(process.env.MAXOTP)
       user.OTP = Math.round(Math.random() * (max - min) + min);
+      user.OTPCreatedAt = sequelize.literal('CURRENT_TIMESTAMP')
       user.isVerified = false;
       await user.save();
     }

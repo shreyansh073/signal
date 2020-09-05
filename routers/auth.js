@@ -210,12 +210,7 @@ router.post('/auth/verify-otp', async (req,res) => {
     
     if(user){
         const val = await user.isValidOTP(req.body.otp)
-        if(val){     
-            res.send({isVerified: true})
-        }
-        else{
-            res.send({isVerified: false})
-        }
+        res.send({isVerified: val})
     }
     else{
         res.status(400).send('invalid email')
