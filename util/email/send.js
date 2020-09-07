@@ -7,13 +7,14 @@ async function SendWelcomeEmail(data) {
 		fs.readFileSync(__dirname + '/templates/welcome.ejs', 'utf8'),
 		{
 			username: data.username,
+			name: data.name
 		}
 		);
 
 	const obj = {
 		to: data.email,
 		from: process.env.SENDGRID_EMAIL,
-		subject: 'Welcome to Comet!',
+		subject: `${data.name}, Welcome to Comet!`,
 		html: msg,
 	};
 
@@ -26,14 +27,15 @@ async function SendPasswordResetEmail(data) {
 		fs.readFileSync(__dirname + '/templates/reset.ejs', 'utf8'),
 		{
 			otp: data.otp,
-			username: data.username
+			username: data.username,
+			name: data.name
 		},
 	);
 
 	const obj = {
 		to: data.email,
 		from: process.env.SENDGRID_EMAIL,
-		subject: 'Forgot Password | Comet',
+		subject: `${data.name} reset your Comet password`,
 		html: msg,
 	};
 	return await SendEmail(obj);
@@ -44,14 +46,15 @@ async function SendEmailVerificationEmail(data) {
 		fs.readFileSync(__dirname + '/templates/verifyEmail.ejs', 'utf8'),
 		{
 			otp: data.otp,
-			username: data.username
+			username: data.username,
+			name: data.name
 		},
 	);
 
 	const obj = {
 		to: data.email,
 		from: process.env.SENDGRID_EMAIL,
-		subject: 'Verify Email | Comet',
+		subject: `${data.name} verify your email on Comet`,
 		html: msg,
 	};
 	return await SendEmail(obj);

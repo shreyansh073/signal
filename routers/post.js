@@ -70,7 +70,7 @@ router.post('/posts/new', auth, async (req,res)=>{
 
             // send push notification for repins
             const source = await User.findOne({where: {id: req.body.repinnedFromId}})
-            pushNotification(source.expoToken,`You are sharing great stuff!`, `${req.user.username} just cometed your post. Check'em out now!`,{avatarUrl: req.user.avatarUrl})
+            pushNotification(source.expoToken,`${req.user.username} cometed your post`, `Congrats, you’re sharing great stuff! Check out what others are sharing`,{avatarUrl: req.user.avatarUrl})
         }
 
         res.send(post)

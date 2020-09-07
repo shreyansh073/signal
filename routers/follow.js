@@ -30,7 +30,7 @@ router.post('/follow', auth, async (req,res)=>{
         await dest.save();
 
         // send push notification
-        pushNotification(dest.expoToken,`Woot! ${req.user.username} started following you!`, "Check'em out now",{avatarUrl: req.user.avatarUrl})
+        pushNotification(dest.expoToken,`${req.user.username} started following you!`, "Yay! Explore Comet to know what they’re sharing",{avatarUrl: req.user.avatarUrl})
 
         res.send()
     }catch(e){
@@ -55,7 +55,7 @@ router.post('/follow/many', auth, async (req,res)=>{
                 'target': `user:${dest.id}`,
                 'activity_copy_limit': 20
             })
-            pushNotification(dest.expoToken,`${req.user.username} follows you!`, "For more interesting content, follow them back!",{avatarUrl: req.user.avatarUrl})
+            pushNotification(dest.expoToken,`${req.user.username} started following you!`, "Yay! Explore Comet to know what they’re sharing",{avatarUrl: req.user.avatarUrl})
         })
 
         const client = getStreamClient();
