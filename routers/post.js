@@ -9,11 +9,6 @@ const router = new express.Router()
 
 router.post('/posts/new', auth, async (req,res)=>{    
     try{        
-        if(req.body.repinnedFromId && req.body.repinnedFromPostId){
-            const repinnedFromPost = await Post.findOne({where: {id: req.body.repinnedFromPostId}});            repinnedFromPost.repinCount = repinnedFromPost.repinCount + 1;
-            await repinnedFromPost.addUser(req.user)
-            await repinnedFromPost.save()
-        }
         let ogImageUrl=null,ogSiteName=null,ogTitle=null,ogType=null,ogDescription=null;
         if( req.body.ogImageUrl && 
             req.body.ogSiteName && 
@@ -44,7 +39,8 @@ router.post('/posts/new', auth, async (req,res)=>{
             //the repin post id will be sent from client
             description: req.body.description,
             url: req.body.url,
-            repinnedFromId: req.body.repinnedFromId, 
+            repinnedFromId: req.body.repinnedFromId,
+            repinnedFromPostId: req.body.repinnedFromPostId,
             ownerId: req.user.id,
             ogSiteName: ogSiteName,
             ogTitle: ogTitle,
@@ -66,10 +62,15 @@ router.post('/posts/new', auth, async (req,res)=>{
             time: post.createdAt
         });
 
-        // send push notification for repins
-        if(req.body.repinnedFromId){
+        if(req.body.repinnedFromId && req.body.repinnedFromPostId){
+            const repinnedFromPost = await Post.findOne({where: {id: req.body.repinnedFromPostId}});            
+            repinnedFromPost.repinCount = repinnedFromPost.repinCount + 1;
+            await repinnedFromPost.addUser(req.user)
+            await repinnedFromPost.save()
+
+            // send push notification for repins
             const source = await User.findOne({where: {id: req.body.repinnedFromId}})
-            await pushNotification(source.expoToken,`You are sharing great stuff!`, "${req.user.username} just cometed your post. Check'em out now!",{avatarUrl: req.user.avatarUrl})
+            pushNotification(source.expoToken,`You are sharing great stuff!`, `${req.user.username} just cometed your post. Check'em out now!`,{avatarUrl: req.user.avatarUrl})
         }
 
         res.send(post)
@@ -147,6 +148,14 @@ router.delete('/posts',auth, async (req,res) => {
         const post = await Post.findOne({where: {id: id, ownerId: req.user.id}})
         
         if(post){
+            if(post.repinnedFromPostId){
+                const repinnedFromPost = await Post.findOne({where: {id: post.repinnedFromPostId}});
+                let repinCount = repinnedFromPost.repinCount;
+                repinCount = repinCount - 1;
+                if(repinCount<0)    repinCount = 0;
+                repinnedFromPost.repinCount = repinCount;
+                await repinnedFromPost.save()
+            }
             await getStreamClient().feed('user', post.ownerId).removeActivity({foreignId: `post:${post.id}`})
             await post.destroy()
             let count = req.user.postCount;

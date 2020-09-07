@@ -60,6 +60,15 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'SET NULL',
       },
+      repinnedFromPostId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: "Posts",
+          key: "id"
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL',
+      },
       UserId: {
         type: Sequelize.INTEGER,
         references: {
