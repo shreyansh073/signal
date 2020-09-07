@@ -35,7 +35,7 @@ async function SendPasswordResetEmail(data) {
 	const obj = {
 		to: data.email,
 		from: process.env.SENDGRID_EMAIL,
-		subject: `${data.name} reset your Comet password`,
+		subject: `${data.name}, reset your Comet password`,
 		html: msg,
 	};
 	return await SendEmail(obj);
@@ -54,7 +54,7 @@ async function SendEmailVerificationEmail(data) {
 	const obj = {
 		to: data.email,
 		from: process.env.SENDGRID_EMAIL,
-		subject: `${data.name} verify your email on Comet`,
+		subject: `${data.name}, verify your email on Comet`,
 		html: msg,
 	};
 	return await SendEmail(obj);
