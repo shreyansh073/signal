@@ -108,7 +108,7 @@ router.get('/posts/preview', auth, async (req,res) => {
                 ogType: og.type,
                 ogDescription: og.description,
                 ogImageUrl: og.images[0] ? og.images[0].image : null,
-                url: og.url
+                url: og.url ? og.url : req.query.url
             });
         }
         else    throw new Error("can't scrape");
