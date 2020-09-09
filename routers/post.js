@@ -70,7 +70,7 @@ router.post('/posts/new', auth, async (req,res)=>{
 
             // send push notification for repins
             const source = await User.findOne({where: {id: req.body.repinnedFromId}})
-            pushNotification(source.expoToken,`${req.user.username} just cometed great content`, `Check it out now`,{avatarUrl: req.user.avatarUrl})
+            pushNotification(source.expoToken,`${req.user.username} cometed your post`, `Congrats, you’re sharing great stuff! Check out what others are sharing`,{avatarUrl: req.user.avatarUrl})
         }
         else{
             let followerList = await feed.followers();
@@ -82,10 +82,10 @@ router.post('/posts/new', auth, async (req,res)=>{
             const users = await User.findAll({where: {id: id_list}})
             let list = [];
             for(i in users){
-                if(users[i].id === parseInt(req.user.id)){
+                if(users[i].id === parseInt(req.body.id)){
                     continue;
                 }
-                pushNotification(users[i].expoToken,`${req.user.username} cometed your post`, `Congrats, you’re sharing great stuff! Check out what others are sharing`,{avatarUrl: req.user.avatarUrl})
+                pushNotification(users[i].expoToken,`${req.user.username} just cometed great content`, `Check it out now!`,{avatarUrl: req.user.avatarUrl})
             }
         }
 
