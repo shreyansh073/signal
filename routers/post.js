@@ -82,10 +82,9 @@ router.post('/posts/new', auth, async (req,res)=>{
             const users = await User.findAll({where: {id: id_list}})
             let list = [];
             for(i in users){
-                if(users[i].id === parseInt(req.query.id)){
+                if(users[i].id === parseInt(req.user.id)){
                     continue;
                 }
-                console.log(users[i].id)
                 pushNotification(users[i].expoToken,`${req.user.username} cometed your post`, `Congrats, you’re sharing great stuff! Check out what others are sharing`,{avatarUrl: req.user.avatarUrl})
             }
         }
