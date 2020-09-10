@@ -72,24 +72,27 @@ router.post('/posts/new', auth, async (req,res)=>{
             const source = await User.findOne({where: {id: req.body.repinnedFromId}})
             pushNotification(source.expoToken,`${req.user.username} cometed your post`, `Congrats, you’re sharing great stuff! Check out what others are sharing`,{avatarUrl: req.user.avatarUrl})
         }
-        else{
-            let followerList = await feed.followers();
-            let id_list = followerList.results.map((item) => {
-                const arr = item.feed_id.split(":");
-                return parseInt(arr[1]);
-            })
-            
-            const users = await User.findAll({where: {id: id_list}})
-            let list = [];
-            for(i in users){
-                if(users[i].id === parseInt(req.body.id)){
-                    continue;
-                }
-                pushNotification(users[i].expoToken,`${req.user.username} just cometed great content`, `Check it out now!`,{avatarUrl: req.user.avatarUrl})
+        
+        let followerList = await feed.followers();
+        let id_list = followerList.results.map((item) => {
+            const arr = item.feed_id.split(":");
+            return parseInt(arr[1]);
+        })
+        
+        const users = await User.findAll({where: {id: id_list}})
+        let list = [];
+        for(i in users){
+            if(users[i].id === parseInt(req.body.id)){
+                continue;
             }
+            if(req.body.repinnedFromId && users[i].id === req.body.repinnedFromId){
+                continue;
+            }
+            list.push(users[i].id)
+            pushNotification(users[i].expoToken,`${req.user.username} just cometed great content`, `Check it out now!`,{avatarUrl: req.user.avatarUrl})
         }
 
-        res.send(post)
+        res.send({post: post,notifications: list})
     }catch(err){
         console.log(err)
         res.status(400).send('could not create post')
