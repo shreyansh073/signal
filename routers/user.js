@@ -177,7 +177,8 @@ router.get('/user/expo',auth, async (req,res) => {
 
 router.post('/user/notification', auth, async (req,res) => {
     try{
-        pushNotification(req.user.exp, 'Test','Test');
+        const notif = await pushNotification(req.user.exp, 'Test','Test');
+        console.log(notif)
         res.send()
     }catch(e){
         console.log(e);
