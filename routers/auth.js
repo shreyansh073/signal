@@ -16,6 +16,7 @@ const {pushNotification} = require('../util/expo')
 router.post('/auth/signup', async (req,res) => {
     let data = req.body || {};
     data.email = data.email.toLowerCase()
+    data.username = data.username.toLowerCase()
 
     if (!(data.email && data.password && data.name && data.username)) {
 		return res.status(400).json({ error: 'Missing required fields.' });
@@ -124,7 +125,7 @@ router.post('/auth/login', async (req,res) => {
         user = await User.findOne({where: {email: data.input.toLowerCase()}})
     }
     else if(isValidUsername(data.input)){
-        user = await User.findOne({where: {username: data.input}})
+        user = await User.findOne({where: {username: data.input.toLowerCase()}})
     }
     else{
         return res.status(409).json({
@@ -155,7 +156,7 @@ router.post('/auth/forgot-password', async (req,res) => {
         where: {
             [Op.or]: [
                 { email: req.body.input.toLowerCase() }, 
-                { username: req.body.input }
+                { username: req.body.input.toLowerCase() }
             ]
         }
 	});
@@ -183,7 +184,7 @@ router.post('/auth/reset-password',async (req,res) => {
             where: {
                 [Op.or]: [
                     { email: req.body.input.toLowerCase() }, 
-                    { username: req.body.input }
+                    { username: req.body.input.toLowerCase() }
                 ]
             }
         });
@@ -207,7 +208,7 @@ router.post('/auth/verify-otp', async (req,res) => {
         where: {
             [Op.or]: [
                 { email: req.body.input.toLowerCase() }, 
-                { username: req.body.input }
+                { username: req.body.input.toLowerCase() }
             ]
         }
     });
@@ -229,7 +230,7 @@ router.post('/auth/verify-email', async (req,res) => {
         where: {
             [Op.or]: [
                 { email: req.body.input.toLowerCase() }, 
-                { username: req.body.input }
+                { username: req.body.input.toLowerCase() }
             ]
         }
     });
