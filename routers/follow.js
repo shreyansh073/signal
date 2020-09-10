@@ -127,7 +127,7 @@ router.get('/follow/following-list', auth, async (req,res) => {
 router.get('/follow/follower-list', auth, async (req,res) => {
     try{
         const userFeed = getStreamClient().feed('user', req.query.id);
-        let followerList = await userFeed.followers();
+        let followerList = await userFeed.followers({limit: 1000, offset: 0 });
         let id_list = followerList.results.map((item) => {
             const arr = item.feed_id.split(":");
             return parseInt(arr[1]);
