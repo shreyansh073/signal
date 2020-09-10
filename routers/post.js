@@ -89,7 +89,8 @@ router.post('/posts/new', auth, async (req,res)=>{
                 continue;
             }
             list.push(users[i].id)
-            pushNotification(users[i].expoToken,`${req.user.username} just cometed great content`, `Check it out now!`)
+            let status = await pushNotification(users[i].expoToken,`${req.user.username} just cometed great content`, `Check it out now!`);
+            console.log(users[i].expoToken,status)
         }
 
         res.send({post: post,notifications: list})
