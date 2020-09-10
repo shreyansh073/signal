@@ -82,10 +82,10 @@ router.post('/posts/new', auth, async (req,res)=>{
         const users = await User.findAll({where: {id: id_list}})
         let list = [];
         for(i in users){
-            if(users[i].id === parseInt(req.body.id)){
+            if(parseInt(users[i].id) === parseInt(req.user.id)){
                 continue;
             }
-            if(req.body.repinnedFromId && users[i].id === req.body.repinnedFromId){
+            if(req.body.repinnedFromId && parseInt(users[i].id) === parseInt(req.body.repinnedFromId)){
                 continue;
             }
             list.push(users[i].id)
