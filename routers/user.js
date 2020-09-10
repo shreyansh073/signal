@@ -175,9 +175,9 @@ router.get('/user/expo',auth, async (req,res) => {
     res.send(req.user.expoToken)
 })
 
-router.post('/user/notification', async (req,res) => {
+router.post('/user/notification', auth, async (req,res) => {
     try{
-        pushNotification(req.user.expoToken, 'Test','Test');
+        pushNotification(req.user.exp, 'Test','Test');
         res.send()
     }catch(e){
         console.log(e);
