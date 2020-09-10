@@ -26,7 +26,7 @@ router.post('/posts/new', auth, async (req,res)=>{
             console.log("repeating scrape operation")
             const og = await getStreamClient().og(req.body.url);
             if(og){
-                ogImageUrl = og.images[0] ? og.images[0].image : null;
+                ogImageUrl = og.images ? (og.images[0] ? og.images[0].image : null) : null;
                 ogSiteName = og.site_name ? og.site_name : null;
                 ogTitle = og.title ? og.title : null;
                 ogType = og.type ? og.type : null;
@@ -122,11 +122,11 @@ router.get('/posts/preview', auth, async (req,res) => {
         const og = await getStreamClient().og(req.query.url)
         if(og){
             res.send({
-                ogSiteName: og.site_name,
-                ogTitle: og.title,
-                ogType: og.type,
-                ogDescription: og.description,
-                ogImageUrl: og.images[0] ? og.images[0].image : null,
+                ogSiteName: og.site_name ? og.site_name : null,
+                ogTitle: og.title ? og.title : null,
+                ogType: og.type ? og.type : null,
+                ogDescription: og.description ? og.description : null,
+                ogImageUrl: og.images ? (og.images[0] ? og.images[0].image : null) : null,
                 url: og.url ? og.url : req.query.url
             });
         }
