@@ -70,7 +70,7 @@ router.post('/posts/new', auth, async (req,res)=>{
 
             // send push notification for repins
             const source = await User.findOne({where: {id: req.body.repinnedFromId}})
-            pushNotification(source.expoToken,`${req.user.username} cometed your post`, `Congrats, you’re sharing great stuff! Check out what others are sharing`,{avatarUrl: req.user.avatarUrl})
+            pushNotification(source.expoToken,`${req.user.username} cometed your post`, `Congrats, you’re sharing great stuff! Check out what others are sharing`)
         }
         
         let followerList = await feed.followers();
@@ -89,7 +89,7 @@ router.post('/posts/new', auth, async (req,res)=>{
                 continue;
             }
             list.push(users[i].id)
-            pushNotification(users[i].expoToken,`${req.user.username} just cometed great content`, `Check it out now!`,{avatarUrl: req.user.avatarUrl})
+            pushNotification(users[i].expoToken,`${req.user.username} just cometed great content`, `Check it out now!`)
         }
 
         res.send({post: post,notifications: list})
@@ -127,7 +127,7 @@ router.get('/posts/preview', auth, async (req,res) => {
                 ogType: og.type ? og.type : null,
                 ogDescription: og.description ? og.description : null,
                 ogImageUrl: og.images ? (og.images[0] ? og.images[0].image : null) : null,
-                url: og.url ? og.url : req.query.url
+                url: req.query.url
             });
         }
         else    throw new Error("can't scrape");

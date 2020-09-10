@@ -12,6 +12,7 @@ const fs = require('fs');
 const {isValidUsername} = require('../util/util')
 const index = require('../util/algolia')
 const { Expo } = require('expo-server-sdk');
+const {pushNotification} = require('../util/expo')
 
 const express = require('express')
 const router = new express.Router()
@@ -172,6 +173,17 @@ router.post('/user/expo', auth, async (req,res) => {
 
 router.get('/user/expo',auth, async (req,res) => {
     res.send(req.user.expoToken)
+})
+
+router.post('/user/notification', async (req,res) => {
+    try{
+        pushNotification(req.user.expoToken, 'Test','Test');
+        res.send()
+    }catch(e){
+        console.log(e);
+        res.status(400).send()
+    }
+    
 })
 
 module.exports = router
