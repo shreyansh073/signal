@@ -73,7 +73,7 @@ router.post('/posts/new', auth, async (req,res)=>{
             pushNotification(source.expoToken,`${req.user.username} cometed your post`, `Congrats, you’re sharing great stuff! Check out what others are sharing`)
         }
         
-        let followerList = await feed.followers();
+        let followerList = await feed.followers({limit: 1000, offset: 0 });
         let id_list = followerList.results.map((item) => {
             const arr = item.feed_id.split(":");
             return parseInt(arr[1]);
@@ -92,7 +92,7 @@ router.post('/posts/new', auth, async (req,res)=>{
             pushNotification(users[i].expoToken,`${req.user.username} just cometed great content`, `Check it out now!`)
         }
 
-        res.send({post: post,notifications: list})
+        res.send(post)
     }catch(err){
         console.log(err)
         res.status(400).send('could not create post')
