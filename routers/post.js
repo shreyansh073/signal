@@ -256,4 +256,18 @@ router.delete('/posts/rating', auth, async (req,res) => {
     await rating.destroy()
     res.send()
 })
+
+router.get('/posts/rating_list', auth, async (req,res) => {
+    const rating_list = await Rating.findAll({
+        where: {
+            PostId: req.query.id
+        },
+        attributes: ['rating','review'],
+        include: {
+            model: User,
+            attributes: ['id','username', 'name', 'SchoolId', 'avatarUrl']
+        }
+    })
+    res.send(rating_list)
+})
 module.exports = router

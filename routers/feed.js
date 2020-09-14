@@ -1,5 +1,7 @@
 const Post = require('../models').Posts;
 const User = require('../models').Users;
+const Rating = require('../models').Ratings;
+
 const auth = require('../middleware/auth')
 const {getStreamClient} = require('../util/stream')
 
@@ -54,6 +56,9 @@ router.get('/feed/home-feed', auth, async (req,res) =>{
             }
 
             sortedposts.push(post);
+            // let rating = await Rating.findOne({where: {UserId: req.user.id, PostId: posts[i].id}})
+            // rating = rating ? rating : null;
+            // sortedposts.push({...post.serializePost(),rating: rating})
         }
         res.json({
             posts: sortedposts, 
@@ -81,8 +86,16 @@ router.get('/feed/profile-feed', auth, async (req,res) => {
                 as: 'repinnedFrom',
                 attributes: ['username', 'id'] 
             }
-        });    
-        res.send(posts);
+        });
+        res.send(posts)
+        // let list = [];
+        // for(i in posts){
+        //     let rating = await Rating.findOne({where: {UserId: req.query.id, PostId: posts[i].id}})
+        //     rating = rating ? rating : null;
+        //     const serialized_post = posts[i].serializePost()
+        //     list.push({...serialized_post,rating:rating})
+        // }
+        // res.send(list);
     }catch(e){
         console.log(e)
         res.status(400).send('could not fetch posts')

@@ -64,5 +64,27 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Posts',
   });
+
+  Post.prototype.serializePost = function(){
+    let serialized;
+    const post = this;
+
+    serialized = {
+      id: post.id,
+      description: post.description,
+      url: post.url,
+      ogTitle: post.ogTitle,
+      ogDescription: post.ogDescription,
+      ogImageUrl: post.ogImageUrl,
+      ogSiteName: post.ogSiteName,
+      ogType: post.ogType,
+      likeCount: post.likeCount,
+      repinCount: post.repinCount,
+      ratingCount: post.ratingCount,
+      avgRating: post.avgRating,
+    }
+    return serialized;
+  }
+
   return Post;
 };

@@ -69,15 +69,24 @@ router.post('/auth/signup', async (req,res) => {
         await sourceFeed.follow('user', user.id);
 
         //auto follow comet curators
-        if(user.username !== "comet_curators"){
+        if(user.username !== "comet_curators" && user.username !=="techtwitterreads"){
             const comet_curators = await User.findOne({where: {username:"comet_curators"}});
             const comet_curators_feed = getStreamClient().feed('timeline', comet_curators.id)
+
+            const techtwitterreads = await User.findOne({where: {username:"techtwitterreads"}});
+            const techtwitterreads_feed = getStreamClient().feed('timeline', techtwitterreads.id)
 
             await comet_curators_feed.follow('user', user.id)
             await sourceFeed.follow('user', comet_curators.id)
 
+            await techtwitterreads_feed.follow('user', user.id)
+            await sourceFeed.follow('user', techtwitterreads.id)
+
             await user.addDestination(comet_curators)
             await comet_curators.addDestination(user)
+
+            await user.addDestination(techtwitterreads)
+            await techtwitterreads.addDestination(user)
 
             user.followingCount = user.followingCount + 1;
             user.followerCount = user.followerCount + 1;
@@ -87,8 +96,12 @@ router.post('/auth/signup', async (req,res) => {
             comet_curators.followerCount = comet_curators.followerCount + 1;
             await comet_curators.save()
 
+            techtwitterreads.followingCount = techtwitterreads.followingCount + 1;
+            techtwitterreads.followerCount = techtwitterreads.followerCount + 1;
+            await techtwitterreads.save()
+
             // send push notification
-            pushNotification(user.expoToken,`${comet_curators.username} started following you`, "Yay! Explore Comet to know what they’re sharing ",{avatarUrl: comet_curators.avatarUrl})
+            pushNotification(user.expoToken,`${comet_curators.username} & ${techtwitterreads.username} started following you`, "Yay! Explore Comet to know what they’re sharing ",{avatarUrl: comet_curators.avatarUrl})
 
         }
         
