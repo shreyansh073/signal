@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       this.myAssociation = this.hasMany(models.Posts, {as: 'owner'})
       this.myAssociation = this.hasMany(models.Posts, {as: 'repinnedFrom'})
       this.myAssociation = this.belongsToMany(models.Posts, {through: models.Repinners})
+      this.myAssociation = this.hasMany(models.Ratings)
       this.myAssociation = this.belongsToMany(models.Users, {as: 'Destination',foreignKey: 'SourceId', through: models.Follows})    
     }
   };

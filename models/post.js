@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       this.myAssociation = this.belongsTo(models.Users, {as: 'repinnedFrom'})
       this.myAssociation = this.belongsTo(models.Posts, {as: 'repinnedFromPost'})
       this.myAssociation = this.belongsToMany(models.Users, {through: models.Repinners})
+      this.myAssociation = this.hasMany(models.Ratings)
     }
   };
   Post.init({
@@ -51,6 +52,13 @@ module.exports = (sequelize, DataTypes) => {
     repinCount: {
       type: DataTypes.INTEGER,
       defaultValue: 0
+    },
+    ratingCount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
+    avgRating: {
+      type: DataTypes.DOUBLE(5,2),
     }
   }, {
     sequelize,

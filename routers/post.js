@@ -1,5 +1,6 @@
 const Post = require('../models').Posts;
 const User = require('../models').Users;
+const Rating = require('../models').Ratings;
 const auth = require('../middleware/auth')
 const {getStreamClient} = require('../util/stream')
 const {pushNotification} = require('../util/expo')
@@ -193,4 +194,66 @@ router.delete('/posts',auth, async (req,res) => {
     }
 })
 
+router.post('/posts/rating', auth, async (req,res) => {
+    
+    const post = await Post.findOne({where: {id: req.body.post_id}})
+    if(!post){
+        return res.status(400).send("post does not exist")
+    }
+   
+    let rating = await Rating.findOne({where: {UserId: req.user.id, PostId: req.body.post_id}})
+    let avg;
+    if(rating){
+        console.log(post.avgRating)
+        console.log(rating.rating)
+        avg = ((post.avgRating * post.ratingCount) - rating.rating + req.body.rating)/post.ratingCount;
+        post.avgRating = avg.toFixed(2);
+        await post.save();
+        rating.rating = req.body.rating;
+        await rating.save();
+        
+    }
+    else{
+        rating = await Rating.create({
+            PostId: req.body.post_id,
+            UserId: req.user.id,
+            rating: req.body.rating
+        })
+        avg = post.avgRating;
+        if(avg){
+            avg = (avg * post.ratingCount + rating.rating)/(post.ratingCount+1);
+        }
+        else{
+            avg = rating.rating;
+        }
+        post.ratingCount = post.ratingCount + 1;
+        post.avgRating = avg.toFixed(2);
+        await post.save()
+    }
+    console.log(avg)
+    res.send(rating)
+})
+
+router.delete('/posts/rating', auth, async (req,res) => {
+    const post = await Post.findOne({where: {id: req.body.post_id}})
+    if(!post){
+        return res.status(400).send("post does not exist")
+    }
+    
+    const rating = await Rating.findOne({where: {UserId: req.user.id, PostId: req.body.post_id}})
+    if(!rating){
+        return res.status(400).send("rating does not exist")
+    }
+
+    let avg = post.avgRating;
+    if(avg && avg > 0){
+        avg = ((avg * post.ratingCount) - rating.rating)/(post.ratingCount -1);
+        avg = avg > 0 ? avg : null;
+    }
+    post.avgRating = avg;
+    post.ratingCount = post.ratingCount -1;
+    await post.save()
+    await rating.destroy()
+    res.send()
+})
 module.exports = router
