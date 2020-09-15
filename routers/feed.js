@@ -55,10 +55,9 @@ router.get('/feed/home-feed', auth, async (req,res) =>{
                 continue;
             }
 
-            sortedposts.push(post);
-            // let rating = await Rating.findOne({where: {UserId: req.user.id, PostId: posts[i].id}})
-            // rating = rating ? rating : null;
-            // sortedposts.push({...post.serializePost(),rating: rating})
+            //sortedposts.push(post);
+            let rating = await Rating.findOne({where: {UserId: req.user.id, PostId: posts[i].id}})
+            sortedposts.push({...post.serializePost(),rating: rating ? rating.rating : null})
         }
         res.json({
             posts: sortedposts, 
@@ -87,15 +86,14 @@ router.get('/feed/profile-feed', auth, async (req,res) => {
                 attributes: ['username', 'id'] 
             }
         });
-        res.send(posts)
-        // let list = [];
-        // for(i in posts){
-        //     let rating = await Rating.findOne({where: {UserId: req.query.id, PostId: posts[i].id}})
-        //     rating = rating ? rating : null;
-        //     const serialized_post = posts[i].serializePost()
-        //     list.push({...serialized_post,rating:rating})
-        // }
-        // res.send(list);
+        //res.send(posts)
+        let list = [];
+        for(i in posts){
+            let rating = await Rating.findOne({where: {UserId: req.query.id, PostId: posts[i].id}})
+            const serialized_post = posts[i].serializePost()
+            list.push({...serialized_post,rating: rating ? rating.rating : null})
+        }
+        res.send(list);
     }catch(e){
         console.log(e)
         res.status(400).send('could not fetch posts')
