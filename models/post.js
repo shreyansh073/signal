@@ -82,6 +82,8 @@ module.exports = (sequelize, DataTypes) => {
       repinCount: post.repinCount,
       ratingCount: post.ratingCount,
       avgRating: post.avgRating,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt
     }
     return serialized;
   }
