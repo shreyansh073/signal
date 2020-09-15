@@ -204,8 +204,6 @@ router.post('/posts/rating', auth, async (req,res) => {
     let rating = await Rating.findOne({where: {UserId: req.user.id, PostId: req.body.post_id}})
     let avg;
     if(rating){
-        console.log(post.avgRating)
-        console.log(rating.rating)
         avg = ((post.avgRating * post.ratingCount) - rating.rating + req.body.rating)/post.ratingCount;
         post.avgRating = avg.toFixed(2);
         await post.save();
@@ -229,8 +227,12 @@ router.post('/posts/rating', auth, async (req,res) => {
         post.ratingCount = post.ratingCount + 1;
         post.avgRating = avg.toFixed(2);
         await post.save()
+
+        if(rating.rating > 2){
+            const source = await User.findOne({where: {id: post.ownerId}});
+            pushNotification(source.expoToken,`Ratings on your comet post`, `${req.user.username} just rated your post. Check it out now!`)
+        }
     }
-    console.log(avg)
     res.send(rating)
 })
 
