@@ -56,8 +56,17 @@ router.get('/feed/home-feed', auth, async (req,res) =>{
             }
 
             //sortedposts.push(post);
-            let rating = await Rating.findOne({where: {UserId: req.user.id, PostId: posts[i].id}})
-            sortedposts.push({...post.serializePost(),rating: rating ? rating.rating : null})
+            let rating = await Rating.findOne({where: {UserId: req.user.id, PostId: post.id}})
+            sortedposts.push({
+                ...post.serializePost(),
+                owner: {
+                    username: post.owner.username,
+                    name: post.owner.name,
+                    id: post.owner.id,
+                    avatarUrl: post.owner.avatarUrl
+                },
+                rating: rating ? rating.rating : null
+            })
         }
         res.json({
             posts: sortedposts, 
