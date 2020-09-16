@@ -54,7 +54,7 @@ router.get('/feed/home-feed', auth, async (req,res) =>{
                 // log errors later on
                 continue;
             }
-
+            //console.log(post)
             //sortedposts.push(post);
             let rating = await Rating.findOne({where: {UserId: req.user.id, PostId: post.id}})
             sortedposts.push({
@@ -65,6 +65,10 @@ router.get('/feed/home-feed', auth, async (req,res) =>{
                     id: post.owner.id,
                     avatarUrl: post.owner.avatarUrl
                 },
+                repinnedFrom: post.repinnedFrom ? {
+                    username: post.repinnedFrom.dataValues.username,
+                    id: post.repinnedFrom.dataValues.id
+                } : null,
                 rating: rating ? rating.rating : null
             })
         }
@@ -89,18 +93,38 @@ router.get('/feed/profile-feed', auth, async (req,res) => {
             limit: limit,
             offset: offset,
             order: [['createdAt', 'DESC']],
-            include: {
-                model: User,
-                as: 'repinnedFrom',
-                attributes: ['username', 'id'] 
-            }
+            include: [
+                {
+                    model: User,
+                    as: 'owner',
+                    attributes: ['username', 'name', 'id', 'avatarUrl']
+                },
+                {
+                    model: User,
+                    as: 'repinnedFrom',
+                    attributes: ['username', 'id'] 
+                }
+            ]
         });
         //res.send(posts)
         let list = [];
         for(i in posts){
             let rating = await Rating.findOne({where: {UserId: req.query.id, PostId: posts[i].id}})
             const serialized_post = posts[i].serializePost()
-            list.push({...serialized_post,rating: rating ? rating.rating : null})
+            list.push({
+                ...serialized_post,
+                repinnedFrom: posts[i].repinnedFrom ? {
+                    username: posts[i].repinnedFrom.dataValues.username,
+                    id: posts[i].repinnedFrom.dataValues.id
+                } : null,
+                owner: {
+                    username: posts[i].owner.username,
+                    name: posts[i].owner.name,
+                    id: posts[i].owner.id,
+                    avatarUrl: posts[i].owner.avatarUrl
+                },
+                rating: rating ? rating.rating : null
+            })
         }
         res.send(list);
     }catch(e){
