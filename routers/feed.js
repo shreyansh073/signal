@@ -65,10 +65,6 @@ router.get('/feed/home-feed', auth, async (req,res) =>{
                     id: post.owner.id,
                     avatarUrl: post.owner.avatarUrl
                 },
-                repinnedFrom: {
-                    username: post.repinnedFrom.username,
-                    id: post.repinnedFrom.id,
-                },
                 rating: rating ? rating.rating : null
             })
         }
