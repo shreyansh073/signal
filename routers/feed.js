@@ -109,7 +109,7 @@ router.get('/feed/profile-feed', auth, async (req,res) => {
         //res.send(posts)
         let list = [];
         for(i in posts){
-            let rating = await Rating.findOne({where: {UserId: req.query.id, PostId: posts[i].id}})
+            let rating = await Rating.findOne({where: {UserId: req.user.id, PostId: posts[i].id}})
             const serialized_post = posts[i].serializePost()
             list.push({
                 ...serialized_post,
